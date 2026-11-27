@@ -34,7 +34,6 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
   const [locationOpen, setLocationOpen] = useState(false);
   const [category, setCategory] = useState('সব ক্যাটাগরি');
   const [district, setDistrict] = useState('সারা বাংলাদেশ');
-  const [feedFilter, setFeedFilter] = useState('সব পোস্ট');
   const [trending, setTrending] = useState(false);
   const featured = useMemo(() => featuredModuleSlugs.map((slug) => modules.find((item) => item.slug === slug)).filter((item) => item !== undefined), []);
   const visibleFeatured = featured.filter((item) => category === 'সব ক্যাটাগরি' || item.category === category);
@@ -102,14 +101,14 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
       </section>
 
       <section className="live-feed" aria-labelledby="live-feed-title">
-        <div className="section-heading"><h2 id="live-feed-title"><Radio size={23} className="gold-icon live-radio" /> লাইভ ফিড <span>(সর্বশেষ আপডেট)</span></h2><button type="button" onClick={() => document.getElementById('feed-filters')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}>আরও দেখুন <ChevronRight size={20} /></button></div>
+        <div className="section-heading"><h2 id="live-feed-title"><Radio size={23} className="gold-icon live-radio" /> লাইভ ফিড <span>(সর্বশেষ আপডেট)</span></h2><Link href="/feed">আরও দেখুন <ChevronRight size={20} /></Link></div>
         <div className="feed-filters" id="feed-filters" role="group" aria-label="ফিডের ধরন বেছে নিন">
-          {feedFilters.map((item) => <button type="button" key={item} className={feedFilter === item ? 'active' : ''} aria-pressed={feedFilter === item} onClick={() => setFeedFilter(item)}>{item}</button>)}
+          {feedFilters.map((item) => <Link key={item} href={item === 'সব পোস্ট' ? '/feed' : `/feed?category=${encodeURIComponent(item)}`} className={item === 'সব পোস্ট' ? 'active' : ''}>{item}</Link>)}
         </div>
         <div className="feed-empty">
           <span className="feed-empty-icon"><Bell size={21} /></span>
-          <div><strong>এখনো কোনো {feedFilter === 'সব পোস্ট' ? 'নতুন পোস্ট' : feedFilter + ' পোস্ট'} নেই</strong><p>প্রকাশিত ও যাচাইকৃত পোস্ট এলে এখানে দেখাবে।</p></div>
-          <Link href="/modules" aria-label="সব মডিউল দেখুন"><ArrowRight size={19} /></Link>
+          <div><strong>এখনো কোনো নতুন পোস্ট নেই</strong><p>প্রকাশিত ও যাচাইকৃত পোস্ট এলে এখানে দেখাবে।</p></div>
+          <Link href="/feed" aria-label="লাইভ ফিড খুলুন"><ArrowRight size={19} /></Link>
         </div>
       </section>
 

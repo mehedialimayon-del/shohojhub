@@ -2,10 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
-import { Bell, Grid2X2, Home, Menu, PenSquare, Search, UserRound, X } from 'lucide-react';
+import { ArrowLeft, Bell, Grid2X2, Home, Menu, PenSquare, Radio, Search, UserRound, X } from 'lucide-react';
 
 export default function AppChrome({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const isFeed = pathname.startsWith('/feed');
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
 
@@ -17,13 +20,19 @@ export default function AppChrome({ children }: { children: ReactNode }) {
   return (
     <div className="hub-app">
       <header className="app-header">
-        <div className="app-header-inner">
+        {isFeed ? <div className="app-header-inner feed-app-header">
+          <Link href="/" className="round-tool" aria-label="হোমে ফিরুন"><ArrowLeft size={21} /></Link>
+          <div className="feed-page-brand"><Radio size={26} /><span><h1>লাইভ ফিড</h1><small>সর্বশেষ পোস্ট, অফার ও সুযোগ</small></span></div>
+          <button className="round-tool notice-button" type="button" aria-label="নোটিফিকেশন" onClick={() => showNotice('নতুন নোটিফিকেশন এলে এখানে দেখাবে।')}>
+            <Bell size={20} />
+          </button>
+        </div> : <div className="app-header-inner">
           <button className="round-tool" type="button" aria-label={menuOpen ? 'মেনু বন্ধ করুন' : 'মেনু খুলুন'} onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
           <Link href="/" className="brand-lockup" aria-label="সহজ হাব BD হোম">
-            <Image src="/brand/shohojhub-emblem.png" alt="সহজ হাব BD প্রতীক" width={68} height={68} priority className="brand-emblem" />
-            <span className="brand-copy"><strong><span>সহজ</span> হাব <i>BD</i></strong><small>বাংলাদেশের সব প্রয়োজনে এক প্ল্যাটফর্ম</small></span>
+            <Image src="/brand/shohojhub-pin.png" alt="" width={42} height={54} priority className="brand-pin" />
+            <Image src="/brand/shohojhub-wordmark.png" alt="সহজ হাব BD — One Platform, Every Need" width={190} height={72} priority className="brand-wordmark" />
           </Link>
           <div className="header-actions">
             <button className="round-tool notice-button" type="button" aria-label="নোটিফিকেশন" onClick={() => showNotice('নতুন নোটিফিকেশন এলে এখানে দেখাবে।')}>
@@ -31,7 +40,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
             </button>
             <Link href="/account" className="round-tool" aria-label="অ্যাকাউন্ট"><UserRound size={20} /></Link>
           </div>
-        </div>
+        </div>}
       </header>
 
       {menuOpen && <div className="menu-scrim" onClick={() => setMenuOpen(false)}>

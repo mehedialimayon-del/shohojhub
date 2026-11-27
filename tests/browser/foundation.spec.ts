@@ -72,7 +72,8 @@ test('search displays supported result types with pagination', async ({ page }) 
 test('premium home interactions and the 40-module directory work', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
-  await expect(page.locator('.brand-emblem')).toHaveAttribute('src', /shohojhub-emblem\.png/);
+  await expect(page.locator('.brand-pin')).toHaveAttribute('src', /shohojhub-pin\.png/);
+  await expect(page.locator('.brand-wordmark')).toHaveAttribute('src', /shohojhub-wordmark\.png/);
   await expect(page.locator('.module-card')).toHaveCount(10);
 
   await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
@@ -92,4 +93,20 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await page.getByRole('link', { name: /Porai/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Porai' })).toBeVisible();
   await expect(page.getByRole('status')).toContainText('এখনো চালু করা হয়নি');
+});
+
+test('live feed and filter sheet match the supplied inner-page structure', async ({ page }) => {
+  await page.goto('/feed');
+  await expect(page.getByRole('heading', { name: 'লাইভ ফিড' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'সব পোস্ট' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'বিস্তারিত ফিল্টার খুলুন' }).click();
+  const dialog = page.getByRole('dialog', { name: 'ফিল্টার করুন' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'চাকরি' }).click();
+  await expect(dialog.getByRole('button', { name: 'চাকরি' })).toHaveAttribute('aria-pressed', 'true');
+  await dialog.getByRole('button', { name: 'রিসেট' }).click();
+  await expect(dialog.getByRole('button', { name: 'চাকরি' })).toHaveAttribute('aria-pressed', 'false');
+  await dialog.getByRole('button', { name: /ফলাফল দেখুন/ }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByText('এখনো কোনো প্রকাশিত পোস্ট নেই')).toBeVisible();
 });
