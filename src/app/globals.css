@@ -5,3 +5,21 @@
 body { margin:0; background:#000; color:var(--sh-text); font-family:system-ui,sans-serif; }
 :focus-visible { outline:2px solid var(--sh-accent); outline-offset:4px; }
 @media(prefers-reduced-motion:reduce){.animate-spin{animation:none}}
+
+.hub-width { width: min(100% - 2rem, 68rem); margin-inline: auto; }
+.hub-header { position: sticky; top: 0; z-index: 10; background: #000; border-bottom: 1px solid #2b2b2b; padding-block: 0.85rem; }
+.hub-hero { padding-block: clamp(3rem, 10vw, 7rem) 1.5rem; }
+.hub-hero h1 { margin-block: 1.5rem .6rem; font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; line-height: 1.2; }
+.hub-hero p { line-height: 1.7; }
+.hub-accent { color: #ff5500; }
+.hub-clock { display: flex; align-items: center; gap: .65rem; }
+.hub-clock > span { width: .5rem; height: .5rem; border-radius: 50%; background: #ff5500; }
+.hub-button { display: inline-flex; min-height: 44px; justify-content: center; align-items: center; gap: .5rem; padding: .5rem 1rem; border-radius: .6rem; font-weight: 700; background: #ff5500; color: #000; }
+.hub-button:disabled { opacity: .6; }
+.hub-button-outline { border: 1px solid #ff5500; background: #000; color: #fff; }
+.hub-card { max-width: 36rem; padding: 1rem; border-radius: .85rem; border: 1px solid #303030; background: #101010; }
+.hub-card:hover { border-color: #ff5500; }
+.hub-icon { display: grid; place-items: center; width: 3rem; height: 3rem; border-radius: .6rem; background: #2a1207; color: #ff5500; flex-shrink: 0; }
+.hub-footer { padding-block: 1.25rem; border-top: 1px solid #303030; color: #aaa; }
+.hub-input { width: 100%; min-height: 44px; padding: .75rem; border: 1px solid #525252; border-radius: .6rem; background: #090909; color: #fff; }
+#search { scroll-margin-top: 6rem; }

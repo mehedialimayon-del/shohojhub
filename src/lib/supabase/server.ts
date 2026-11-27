@@ -12,8 +12,8 @@ function getRequiredEnv(name: string): string {
   return value.trim();
 }
 
-export function createClient() {
-  const cookieStore = cookies();
+export async function createClient() {
+  const cookieStore = await cookies();
   const supabaseUrl = getRequiredEnv('NEXT_PUBLIC_SUPABASE_URL');
   const supabaseAnonKey = getRequiredEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY');
 
@@ -26,7 +26,7 @@ export function createClient() {
         try {
           cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
         } catch {
-          // Server Components cannot write cookies; middleware must refresh sessions.
+          // Server Components cannot write cookies; proxy must refresh sessions.
         }
       },
     },
