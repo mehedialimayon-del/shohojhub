@@ -68,3 +68,28 @@ test('search displays supported result types with pagination', async ({ page }) 
   await page.getByRole('button', { name: 'আগের পাতা' }).click();
   await expect(page.locator('li')).toHaveCount(2);
 });
+
+test('premium home interactions and the 40-module directory work', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
+  await expect(page.locator('.brand-emblem')).toHaveAttribute('src', /shohojhub-emblem\.png/);
+  await expect(page.locator('.module-card')).toHaveCount(10);
+
+  await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
+  await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
+  await expect(page.getByRole('button', { name: /ঢাকা/ })).toBeVisible();
+
+  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
+  await expect(page.locator('.hero-copy')).toContainText('হাতের নাগালে');
+  await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
+  await expect(page.locator('.module-card')).toHaveCount(5);
+
+  await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();
+  await expect(page.locator('.directory-card')).toHaveCount(40);
+  await page.getByRole('button', { name: 'শিক্ষা', exact: true }).click();
+  await expect(page.locator('.directory-card')).toHaveCount(3);
+  await page.getByRole('link', { name: /Porai/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Porai' })).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('এখনো চালু করা হয়নি');
+});

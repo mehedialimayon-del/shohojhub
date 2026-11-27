@@ -10,7 +10,7 @@ const bangladeshClock = new Intl.DateTimeFormat('bn-BD', {
 
 export const formatBangladeshTime = (date: Date) => bangladeshClock.format(date);
 
-export default function BangladeshLiveClock() {
+export default function BangladeshLiveClock({ compact = false }: { compact?: boolean }) {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     const update = () => setNow(new Date());
@@ -22,7 +22,8 @@ export default function BangladeshLiveClock() {
     };
   }, []);
 
-  return <time dateTime={now?.toISOString()} className="text-sm tabular-nums">
-    {now ? formatBangladeshTime(now) : 'বাংলাদেশ সময়'}
+  const compactTime = now ? new Intl.DateTimeFormat('bn-BD', { timeZone: 'Asia/Dhaka', hour: '2-digit', minute: '2-digit' }).format(now) : 'বাংলাদেশ সময়';
+  return <time dateTime={now?.toISOString()} className={compact ? 'ticker-time-value' : 'text-sm tabular-nums'}>
+    {compact ? compactTime : now ? formatBangladeshTime(now) : 'বাংলাদেশ সময়'}
   </time>;
 }
