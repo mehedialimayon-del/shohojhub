@@ -19,3 +19,5 @@ test('Bangladesh clock actual formatter crosses midnight and advances seconds',(
  const before=fmt(new Date('2026-11-27T17:59:59Z'));const after=fmt(new Date('2026-11-27T18:00:00Z'));
  assert.match(before,/২৭ নভেম্বর/);assert.match(after,/২৮ নভেম্বর/);assert.notEqual(after,fmt(new Date('2026-11-27T18:00:01Z')));
 });
+
+test('clock timer lifecycle is wired',()=>{const s=read('src/components/BangladeshLiveClock.tsx');assert.match(s,/setInterval\(.*1000\)/);assert.match(s,/clearInterval\(timer\)/);});
