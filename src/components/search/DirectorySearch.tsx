@@ -3,10 +3,17 @@
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-type University = { id: string; name_bn: string; name_en: string; district: string; category: string };
-type SearchResult = { results: University[]; next: number | null };
+type DirectoryEntry = {
+  kind: 'university' | 'shop' | 'product';
+  id: string;
+  title: string;
+  secondary_title: string;
+  district: string;
+};
+const labels = { university: 'বিশ্ববিদ্যালয়', shop: 'দোকান', product: 'পণ্য' };
+type SearchResult = { results: DirectoryEntry[]; next: number | null };
 
-export default function UniversitySearch() {
+export default function DirectorySearch() {
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -48,12 +55,12 @@ export default function UniversitySearch() {
   }
 
   return (
-    <section id="search" className="mt-8 max-w-xl" aria-label="বিশ্ববিদ্যালয় খোঁজ">
-      <label htmlFor="university-search" className="mb-2 block font-semibold">বিশ্ববিদ্যালয় খুঁজুন</label>
+    <section id="search" className="mt-8 max-w-xl" aria-label="সেবা খোঁজ">
+      <label htmlFor="directory-search" className="mb-2 block font-semibold">খুঁজুন</label>
       <div className="relative">
         <Search size={19} className="absolute left-3 top-3.5 hub-accent" aria-hidden />
-        <input className="hub-input pl-10" id="university-search" type="search" value={query} maxLength={80}
-          placeholder="বিশ্ববিদ্যালয়ের নাম বা জেলা" onChange={event => {
+        <input className="hub-input hub-search-input" id="directory-search" type="search" value={query} maxLength={80}
+          placeholder="নাম বা জেলা লিখুন" onChange={event => {
             const value = event.target.value;
             setQuery(value);
             if (value.trim() === term && offset === 0) return;
@@ -67,16 +74,17 @@ export default function UniversitySearch() {
         {term.length === 1 && 'অন্তত ২টি অক্ষর লিখুন।'}
         {pending && 'খোঁজা হচ্ছে…'}
         {error}
-        {!pending && !error && result?.results.length === 0 && 'কোনো বিশ্ববিদ্যালয় পাওয়া যায়নি।'}
+        {!pending && !error && result?.results.length === 0 && 'কোনো ফল পাওয়া যায়নি।'}
       </div>
       {error && <button className="hub-button hub-button-outline mt-3" onClick={() => { setError(''); setPending(true); setRetry(value => value + 1); }}>আবার খুঁজুন</button>}
       {result && !error && result.results.length > 0 && (
         <>
           <ul className="mt-3 grid gap-2" aria-busy={pending}>
             {result.results.map(item => (
-              <li className="hub-card" key={item.id}>
-                <strong>{item.name_bn}</strong>
-                <span className="block text-sm text-neutral-300" lang="en">{item.name_en}</span>
+              <li className="hub-card" key={item.kind + ':' + item.id}>
+                <span className="mb-1 block text-xs text-neutral-300">{labels[item.kind]}</span>
+                <strong>{item.title}</strong>
+                <span className="block text-sm text-neutral-300">{item.secondary_title}</span>
                 <span className="block text-sm text-neutral-300">{item.district}</span>
               </li>
             ))}

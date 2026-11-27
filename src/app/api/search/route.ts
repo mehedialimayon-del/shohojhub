@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   }
   try {
     const client = await createClient();
-    const { data, error } = await client.rpc('search_universities', { search_term: term, page_offset: offset }).abortSignal(request.signal);
+    const { data, error } = await client.rpc('search_directory', { search_term: term, page_offset: offset }).abortSignal(request.signal);
     if (error) throw error;
     return Response.json({ results: data.slice(0, 20), next: data.length > 20 && offset < 500 ? offset + 20 : null }, {
       headers: { 'Cache-Control': 'no-store' },

@@ -26,14 +26,13 @@ test('search retries a failed request and shows the empty result state', async (
     await route.fulfill(calls === 1 ? { status: 503 } : { json: { results: [], next: null } });
   });
   await page.goto('/');
-  await page.getByRole('link', { name: /বাংলাদেশের বিশ্ববিদ্যালয়/ }).click();
   const input = page.getByRole('searchbox');
   await input.fill('ঢ');
   await expect(page.getByRole('status')).toContainText('অন্তত ২টি অক্ষর');
   await input.fill('ঢাকা');
   await expect(page.getByRole('status')).toContainText('এখন খোঁজা যাচ্ছে না');
   await page.getByRole('button', { name: 'আবার খুঁজুন' }).click();
-  await expect(page.getByRole('status')).toContainText('কোনো বিশ্ববিদ্যালয় পাওয়া যায়নি');
+  await expect(page.getByRole('status')).toContainText('কোনো ফল পাওয়া যায়নি');
   expect(calls).toBe(2);
 });
 
@@ -47,4 +46,25 @@ test('server validates pagination and guards password reset', async ({ page, req
   await page.goto('/missing-page');
   await page.locator('a[href="/"]').click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('সহজ হাব BD');
+});
+
+test('search displays supported result types with pagination', async ({ page }) => {
+  await page.route('**/api/search?*', async route => {
+    const nextPage = new URL(route.request().url()).searchParams.get('offset') === '20';
+    const results = nextPage
+      ? [{ kind: 'product', id: '3', title: 'পরীক্ষার পণ্য', secondary_title: 'পরীক্ষার দোকান', district: 'ঢাকা' }]
+      : [
+        { kind: 'university', id: '1', title: 'পরীক্ষার বিশ্ববিদ্যালয়', secondary_title: 'Test University', district: 'ঢাকা' },
+        { kind: 'shop', id: '2', title: 'পরীক্ষার দোকান', secondary_title: 'টেস্ট এলাকা', district: 'ঢাকা' },
+      ];
+    await route.fulfill({ json: { results, next: nextPage ? null : 20 } });
+  });
+  await page.goto('/');
+  await page.getByRole('searchbox').fill('ঢাকা');
+  await expect(page.locator('li')).toHaveCount(2);
+  await page.getByRole('button', { name: 'পরের পাতা' }).click();
+  await expect(page.locator('li')).toHaveCount(1);
+  await expect(page.locator('li')).toContainText('পরীক্ষার পণ্য');
+  await page.getByRole('button', { name: 'আগের পাতা' }).click();
+  await expect(page.locator('li')).toHaveCount(2);
 });
