@@ -391,6 +391,11 @@ a { color: inherit; text-decoration: none; }
   .desktop-app-card strong { color: #ffb923; }
   .desktop-app-card p { margin: .3rem 0 .55rem; font-size: .8rem; }
   .desktop-app-card a { font-size: .76rem; }
+  .app-store-panel { display: flex; align-items: center; gap: .5rem; margin-top: .55rem; }
+  .app-store-panel > svg { flex: none; width: clamp(27px, 3vw, 43px); height: 62px; color: #ffae24; filter: drop-shadow(0 0 5px #ff7700b0); }
+  .app-store-panel > div { display: grid; min-width: 0; gap: .25rem; }
+  .app-store-panel span { display: flex; align-items: center; gap: .3rem; min-width: 0; padding: .26rem .36rem; border: 1px solid #76664f; border-radius: .33rem; background: #0a0a0a; color: #e9e2d8; font-size: .71rem; line-height: 1.2; }
+  .app-store-panel span svg { flex: none; width: 13px; height: 13px; }
   .has-desktop-sidebar { margin-left: var(--desktop-sidebar); }
   .home-content { width: min(100% - 2rem, 1480px); display: grid; grid-template-columns: minmax(0,1.92fr) minmax(275px,1fr);
     grid-template-areas: "search search" "ticker ticker" "hero promo" "quick live" "featured live" "actions live" "foot foot";

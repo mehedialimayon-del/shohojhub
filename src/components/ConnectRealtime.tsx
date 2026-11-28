@@ -24,23 +24,24 @@ export default function ConnectRealtime({ url, anonKey, userId, peer, shouldMark
       if (peer && event.new.sender_id === peer) void markConversationRead(peer).catch(() => {});
       refresh();
     };
-    const channel = client.channel('hub:' + userId + ':' + (peer ?? (notifications ? 'notifications' : 'inbox')));
+    const channel = client.channel('hub:' + userId + ':' + (peer ?? (notifications ? 'notifications' : 'inbox')) + ':' + crypto.randomUUID());
     if (notifications) {
       channel.on('postgres_changes', { event: '*', schema: 'public', table: 'notifications', filter: 'user_id=eq.' + userId }, refresh);
     } else {
       channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'recipient_id=eq.' + userId }, receive)
         .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: 'sender_id=eq.' + userId }, refresh);
     }
-    let active = true;
-    void client.auth.getSession().then(({ data }) => {
-      if (!active || !data.session) return;
-      return client.realtime.setAuth(data.session.access_token).then(() => {
-        if (active) channel.subscribe(status => { if (status === 'SUBSCRIBED') refresh(); });
-      });
-    }).catch(() => {});
+    let connected = false;
+    channel.subscribe(status => {
+      connected = status === 'SUBSCRIBED';
+      if (connected) refresh();
+    });
+    const retry = window.setInterval(() => {
+      if (!connected && document.visibilityState === 'visible') refresh();
+    }, 10_000);
     window.addEventListener('focus', refresh);
     return () => {
-      active = false;
+      window.clearInterval(retry);
       window.clearTimeout(refreshTimer);
       window.removeEventListener('focus', refresh);
       void client.removeChannel(channel);

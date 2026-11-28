@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
-import { ArrowLeft, Bell, BookOpen, BriefcaseBusiness, GraduationCap, Grid2X2, Handshake, Heart, Home, MapPin, Menu, MessageCircle, PenSquare, Radio, Search, Settings, Tag, UserRound, Wallet, Wrench, X } from 'lucide-react';
+import { ArrowLeft, Bell, BookOpen, BriefcaseBusiness, GraduationCap, Grid2X2, Handshake, Heart, Home, MapPin, Menu, MessageCircle, PenSquare, Play, Radio, Search, Settings, Smartphone, Tag, UserRound, Wallet, Wrench, X } from 'lucide-react';
 
 const desktopNav = [
   ['হোম', '/', Home], ['ক্যাটাগরি', '/modules', Grid2X2], ['সেবা', '/feed?category=services', Handshake],
@@ -59,7 +59,11 @@ export default function AppChrome({ children }: { children: ReactNode }) {
         </nav>
         <section className="desktop-app-card">
           <strong>সহজ হাব BD অ্যাপ</strong>
-          <p>Android রিলিজ প্রকাশের পর এখানে পাওয়া যাবে।</p>
+          <div className="app-store-panel">
+            <Smartphone aria-hidden />
+            <div><span aria-disabled="true"><Play aria-hidden /> Google Play</span><span aria-disabled="true"><Smartphone aria-hidden /> App Store</span></div>
+          </div>
+          <p>স্টোরে প্রকাশের পর ডাউনলোড লিংক পাওয়া যাবে।</p>
           <Link href="/modules" className="hub-button hub-button-outline">এখন ওয়েবে দেখুন</Link>
         </section>
       </aside>}

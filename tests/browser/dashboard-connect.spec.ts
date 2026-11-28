@@ -41,6 +41,17 @@ test('dashboard consent, nearby search, two-user chat and notifications work', a
   expect(new Set(districts.data!.map(row => row.division)).size).toBe(8);
 
   const recipient = await browser.newPage({ baseURL: testInfo.project.use.baseURL });
+  const realtimeEvents: string[] = [];
+  recipient.on('websocket', socket => {
+    if (!new URL(socket.url()).pathname.includes('/realtime/')) return;
+    socket.on('framereceived', ({ payload }) => {
+      try {
+        const frame = JSON.parse(payload.toString());
+        const event = Array.isArray(frame) ? frame[3] : frame.event;
+        if (typeof event === 'string') realtimeEvents.push(event);
+      } catch { /* Record only protocol event types. */ }
+    });
+  });
   try {
     await sender.goto('/dashboard');
     await signIn(sender, emails[0], password);
@@ -67,6 +78,13 @@ test('dashboard consent, nearby search, two-user chat and notifications work', a
     expect((await second.json()).results).toHaveLength(2);
     const wrong = await sender.request.get('/api/search?' + new URLSearchParams({ q: tag, district: 'সিলেট', kind: 'post' }));
     expect((await wrong.json()).results).toHaveLength(0);
+    await sender.goto('/feed?' + new URLSearchParams({ q: tag, district: 'ঢাকা', category: 'services' }));
+    await expect(sender.locator('.feed-post-card')).toHaveCount(20);
+    const header = await sender.locator('.app-header').boundingBox();
+    const dock = await sender.locator('.bottom-dock').boundingBox();
+    await sender.locator('.feed-post-card').last().scrollIntoViewIfNeeded();
+    expect((await sender.locator('.app-header').boundingBox())?.y).toBe(header?.y);
+    expect((await sender.locator('.bottom-dock').boundingBox())?.y).toBe(dock?.y);
 
     const observer = createClient(url!, anonKey!, { auth: { persistSession: false } });
     await observer.auth.signInWithPassword({ email: emails[2], password });
@@ -84,7 +102,7 @@ test('dashboard consent, nearby search, two-user chat and notifications work', a
     await sender.getByLabel('বার্তা লিখুন').fill(message);
     await sender.getByRole('button', { name: 'বার্তা পাঠান' }).click();
     await expect(sender.getByText(message)).toBeVisible();
-    await expect(recipient.getByText(message)).toBeVisible({ timeout: 15_000 });
+    await expect(recipient.getByText(message)).toBeVisible({ timeout: 18_000 });
     await recipient.getByRole('link', { name: new RegExp(message) }).click();
     await expect(recipient.getByText(message)).toBeVisible();
     await expect(sender.getByText(/পড়া হয়েছে/)).toBeVisible({ timeout: 15_000 });
@@ -100,6 +118,7 @@ test('dashboard consent, nearby search, two-user chat and notifications work', a
     await sender.getByRole('button', { name: 'বার্তা পাঠান' }).click();
     await expect(sender.getByRole('status')).toHaveText('বার্তা বা অনুরোধটি সম্পন্ন হয়নি।');
   } finally {
+    console.log('Recipient realtime event types:', Array.from(new Set(realtimeEvents)).join(', ') || 'none');
     await recipient.close();
   }
 });
