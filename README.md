@@ -47,8 +47,8 @@ Use Git history for implementation commits and the [Foundation QA workflow](http
 | 21 | User Account & Dashboard | Basic account and profile form | Full dashboard and onboarding pending |
 | 22 | Bangladesh Universities | Directory metadata and bookmark policies tested | Verified national dataset and profile pages pending |
 | 23 | ChaaiKini | Public shop metadata available in database | Location, quotes and UI pending |
-| 24 | Digital Storefront | Shop, product, stock and owner permissions tested | Merchant stock screen available in test build, catalogue management pending |
-| 25 | Cash Memo & Business Tools | Database pricing, rollback, stock, discount and retry tested | Memo screen and browser printing available in test build, Excel pending |
+| 24 | Digital Storefront | Shop, product, stock and owner permissions tested | Merchant workflows and UI pending |
+| 25 | Cash Memo & Business Tools | Database pricing, rollback, stock, discount and retry tested | UI, PDF, print and Excel pending |
 | 26 | Porai | Private tutor-document upload/download and access verified | Tutor profiles, tuition and UI pending |
 | 27 | HaatBazar | Pending | Pending |
 | 28 | ExamArena BD | Pending | Pending |

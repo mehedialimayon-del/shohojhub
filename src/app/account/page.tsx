@@ -22,7 +22,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const auth = client ? await client.auth.getUser() : null;
   const user = !auth?.error ? auth?.data.user : null;
   const profileResult = client && user && !user.is_anonymous
-    ? await client.from('profiles').select('display_name,suspended_at,role').eq('id', user.id).maybeSingle()
+    ? await client.from('profiles').select('display_name,suspended_at').eq('id', user.id).maybeSingle()
     : null;
   const profile = profileResult?.data;
   const formMode = mode === 'register' || mode === 'resend' || mode === 'recovery' ? mode : 'login';
@@ -41,7 +41,6 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
             <button className="hub-button" type="submit">প্রোফাইল সংরক্ষণ করুন</button>
           </form>
         ) : <p>{profile?.suspended_at ? 'এই অ্যাকাউন্ট স্থগিত আছে।' : 'প্রোফাইল এখন খোলা যাচ্ছে না।'}</p>}
-        {profile?.role === "merchant" && !profile.suspended_at && <Link href="/business" className="hub-button hub-button-outline mt-4">স্টক ও ক্যাশ মেমো</Link>}
         <form action={signOut} className="mt-4"><button className="hub-button hub-button-outline">সাইন আউট</button></form>
       </> : <>
         {!client && !notice && <p className="mb-4" role="status">{messages.unavailable}</p>}
