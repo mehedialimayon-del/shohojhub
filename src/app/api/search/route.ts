@@ -24,7 +24,10 @@ export async function GET(request: Request) {
   const term = (params.get('q') ?? '').normalize('NFC').trim();
   const offsetInput = params.get('offset') ?? '0';
   const offset = Number(offsetInput);
-  if (term.length < 2 || term.length > 80 || !/^\d{1,3}$/.test(offsetInput) || offset > 500) {
+  const kind = params.get('kind') || null;
+  const district = params.get('district')?.normalize('NFC').trim() || null;
+  if (term.length < 2 || term.length > 80 || !/^\d{1,3}$/.test(offsetInput) || offset > 500
+    || (kind && !['university', 'shop', 'product', 'post'].includes(kind)) || (district?.length ?? 0) > 80) {
     return Response.json({ error: 'invalid_search' }, { status: 400 });
   }
   if (!allowRequest(request)) {
@@ -32,7 +35,9 @@ export async function GET(request: Request) {
   }
   try {
     const client = await createClient();
-    const { data, error } = await client.rpc('search_directory', { search_term: term, page_offset: offset }).abortSignal(request.signal);
+    const { data, error } = await client.rpc('search_hub', {
+      search_term: term, page_offset: offset, result_kind: kind, result_district: district,
+    }).abortSignal(request.signal);
     if (error) throw error;
     return Response.json({ results: data.slice(0, 20), next: data.length > 20 && offset < 500 ? offset + 20 : null }, {
       headers: { 'Cache-Control': 'no-store' },

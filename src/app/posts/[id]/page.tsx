@@ -26,6 +26,8 @@ export default async function PostPage({ params, searchParams }: {
   const owned = user && !user.is_anonymous ? await client.rpc('current_user_posts') : null;
   const mine = Boolean(owned?.data?.some((row: { id: string }) => row.id === id));
   const published = postStatus(post) === 'প্রকাশিত';
+  const messenger = !mine && published && user && !user.is_anonymous
+    ? await client.rpc('post_message_peer', { target_post: id }) : null;
   const status = (await searchParams).status;
   return <main className="hub-width page-content post-compose-page">
     <Link href={mine ? '/posts/manage' : '/feed'} className="hub-button hub-button-outline">{mine ? 'আমার পোস্ট' : 'লাইভ ফিডে ফিরুন'}</Link>
@@ -39,6 +41,7 @@ export default async function PostPage({ params, searchParams }: {
       <p>{[post.division, post.district, post.area].filter(Boolean).join(' · ')}</p>
       <p>যোগাযোগের নাম · {post.contact_name}</p>
     </article>
+    {messenger?.data && <Link href={'/connect/post/' + id} className="hub-button mt-4">Shohoj Connect-এ বার্তা দিন</Link>}
     {mine && <div className="mt-5 grid gap-4">
       {post.status === 'pending' && <>
         <h2 className="text-xl font-bold">পোস্ট সম্পাদনা</h2>

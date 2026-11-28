@@ -7,7 +7,7 @@ test('homepage and clock fit the viewport and account navigation works', async (
   const timestamp = await page.locator('time').getAttribute('datetime');
   await expect(page.locator('time')).not.toHaveAttribute('datetime', timestamp!);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.getByRole('link', { name: 'অ্যাকাউন্ট', exact: true }).click();
+  await page.locator('header').getByRole('link', { name: 'অ্যাকাউন্ট', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('অ্যাকাউন্ট');
   await page.getByRole('link', { name: 'নতুন অ্যাকাউন্ট' }).click();
   await expect(page.getByRole('button', { name: 'অ্যাকাউন্ট তৈরি' })).toBeVisible();
@@ -76,11 +76,24 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
   await expect(page.locator('.brand-pin')).toHaveAttribute('src', /shohojhub-pin\.png/);
   await expect(page.locator('.brand-wordmark')).toHaveAttribute('src', /shohojhub-wordmark\.png/);
-  await expect(page.locator('.module-card')).toHaveCount(8);
-  await expect(page.locator('.module-card strong')).toHaveText([
+  const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
+  const cards = page.locator('.module-card:visible');
+  await expect(cards).toHaveCount(desktop ? 14 : 10);
+  await expect(cards.locator('strong')).toHaveText([
     'ChaaiKini', 'HaatBazar', 'Porai', 'ExamArena BD',
-    'A&N Overseas', 'ChakriChai', 'ShebaChai', 'VaraChai',
+    'A&N Overseas', 'ChakriChai', 'ShebaChai', 'VaraChai', 'Stock Manager', 'Success Stories',
+    ...(desktop ? ['ShohojTools', 'AI Assistant', 'Referral & Rewards', 'KajChai'] : []),
   ]);
+  expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
+  expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(55);
+  if (desktop) {
+    await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
+    await page.getByRole('button', { name: 'আগের ব্যানার' }).click();
+    await expect(page.getByRole('link', { name: 'অফার দেখুন', exact: true })).toHaveAttribute('href', '/feed?category=deals');
+    await page.getByRole('button', { name: 'পরের ব্যানার' }).click();
+    await expect(page.getByRole('button', { name: 'স্লাইড 1' })).toHaveAttribute('aria-pressed', 'true');
+  }
   await page.getByRole('button', { name: 'টিকার থামান' }).click();
   await expect(page.locator('.ticker-track')).toHaveCSS('animation-play-state', 'paused');
   await page.getByRole('button', { name: 'টিকার চালু করুন' }).click();
@@ -92,7 +105,7 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await page.getByRole('button', { name: 'স্লাইড 2' }).click();
   await expect(page.locator('.hero-copy')).toContainText('হাতের নাগালে');
   await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
-  await expect(page.locator('.module-card')).toHaveCount(5);
+  await expect(cards).toHaveCount(5);
 
   await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();

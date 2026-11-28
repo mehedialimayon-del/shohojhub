@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { accountReturnTo } from '@/lib/account-return';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -44,9 +45,9 @@ export async function submitAccount(form: FormData) {
   } catch {
     status = 'unavailable';
   }
-  const requested = String(form.get('returnTo') ?? '');
-  const returnTo = /^\/posts\/new(?:\?intent=(need|offer))?$/.test(requested) ? requested : '/account';
-  redirect(status === 'signed_in' ? returnTo : '/account?status=' + status);
+  const returnTo = accountReturnTo(form.get('returnTo'));
+  const retry = returnTo !== '/account' && status === 'login_error' ? '&returnTo=' + encodeURIComponent(returnTo) : '';
+  redirect(status === 'signed_in' ? returnTo : '/account?status=' + status + retry);
 }
 
 export async function signOut() {
