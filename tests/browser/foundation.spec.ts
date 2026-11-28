@@ -111,6 +111,13 @@ test('premium home interactions and the 40-module directory work', async ({ page
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
   expect(await page.locator('.reference-feed-stream').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
+});
+
+test('home carousel, location, ticker and feed filters work', async ({ page }) => {
+  await page.goto('/');
+  const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
+  const cards = page.locator('.module-card:visible');
+  await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
   if (desktop) {
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
