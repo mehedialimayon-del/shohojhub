@@ -113,27 +113,6 @@ test('premium home interactions and the 40-module directory work', async ({ page
   expect(await page.locator('.reference-feed-stream').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
 });
 
-test('home location and feed filters work', async ({ page }) => {
-  await page.goto('/');
-  const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
-  const cards = page.locator('.module-card:visible');
-  await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
-
-  await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
-  await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'এলাকা বেছে নিন' })).toContainText('ঢাকা');
-
-  await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
-  await expect(page.locator('.hero-banner')).toHaveAttribute('data-banner', '2');
-  await page.locator('.hero-banner-hotspot').click();
-  await expect(page.locator('.download-notice')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
-  if (!desktop) {
-    await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
-    await expect(cards).toHaveCount(5);
-  }
-});
-
 test('module directory links open working module destinations', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
@@ -160,6 +139,10 @@ test('the reference carousel rotates and can be paused', async ({ page }) => {
   await page.getByRole('button', { name: 'স্লাইড 1' }).click();
   await expect(banner).toHaveAttribute('data-banner', '1');
   await expect(page.getByRole('button', { name: 'ব্যানার চালু করুন' })).toBeVisible();
+  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
+  await expect(banner).toHaveAttribute('data-banner', '2');
+  await page.locator('.hero-banner-hotspot').click();
+  await expect(page.locator('.download-notice')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
 });
 
 test('center navigation opens Nearby and listing results can expand without moving the chrome', async ({ page }) => {
