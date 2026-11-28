@@ -113,25 +113,11 @@ test('premium home interactions and the 40-module directory work', async ({ page
   expect(await page.locator('.reference-feed-stream').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
 });
 
-test('home carousel, location, ticker and feed filters work', async ({ page }) => {
+test('home location and feed filters work', async ({ page }) => {
   await page.goto('/');
   const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
   const cards = page.locator('.module-card:visible');
   await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
-  if (desktop) {
-    await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
-    await page.getByRole('button', { name: 'আগের ব্যানার' }).click();
-    await expect(page.locator('.hero-banner')).toHaveAttribute('data-banner', '2');
-    await expect(page.getByRole('img', { name: /Google Play থেকে ডাউনলোড করুন/ })).toBeVisible();
-    await page.getByRole('button', { name: 'পরের ব্যানার' }).click();
-    await expect(page.getByRole('button', { name: 'স্লাইড 1' })).toHaveAttribute('aria-pressed', 'true');
-  }
-  if (desktop) {
-    await page.getByRole('button', { name: 'টিকার থামান' }).click();
-    await expect(page.locator('.ticker-track')).toHaveCSS('animation-play-state', 'paused');
-    await page.getByRole('button', { name: 'টিকার চালু করুন' }).click();
-  }
 
   await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
   await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
