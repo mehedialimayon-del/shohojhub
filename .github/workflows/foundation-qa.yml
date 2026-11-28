@@ -21,6 +21,9 @@ jobs:
         timeout-minutes: 15
         run: |
           npx --yes supabase@2.84.2 init
+          # Reserve a non-default database port so the disposable CI stack does
+          # not collide with services already bound on hosted runners.
+          sed -i 's/^port = 54322$/port = 55432/' supabase/config.toml
           npx --yes supabase@2.84.2 start -x studio,imgproxy,edge-runtime,logflare,vector,postgres-meta
           stack=$(npx --yes supabase@2.84.2 status --output json)
           NEXT_PUBLIC_SUPABASE_URL=$(jq -er '.API_URL' <<< "$stack")

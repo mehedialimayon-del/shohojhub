@@ -78,6 +78,7 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(page.locator('.brand-wordmark')).toHaveAttribute('src', /shohojhub-wordmark\.png/);
   const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
   const cards = page.locator('.module-card:visible');
+  await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
   await expect(cards).toHaveCount(desktop ? 14 : 10);
   await expect(cards.locator('strong')).toHaveText([
     'চায়াকিনি', 'হাটবাজার', 'পড়াই', 'ExamArena BD',
@@ -88,6 +89,8 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(cards.filter({ hasText: 'Business Tools' })).toHaveAttribute('href', '/business');
   await expect(cards.filter({ hasText: 'AN Media Hub' })).toHaveAttribute('href', '/feed?category=education');
   await expect(cards.filter({ hasText: 'চায়াকিনি' })).toHaveAttribute('href', '/modules/chaikini');
+  await expect(cards.filter({ hasText: 'চাকরিচাই' })).toHaveAttribute('href', '/jobs');
+  await expect(cards.filter({ hasText: 'পড়াই' })).toHaveAttribute('href', '/tuition');
   expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
   expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(desktop ? 55 : 86);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -97,6 +100,17 @@ test('premium home interactions and the 40-module directory work', async ({ page
   expect((await page.locator('.app-header').boundingBox())?.y).toBe(headerTop);
   expect((await page.locator('.bottom-dock').boundingBox())?.y).toBe(dockTop);
   await page.evaluate(() => window.scrollTo(0, 0));
+  const frame = page.locator('.reference-home-shell');
+  const size = await frame.boundingBox();
+  expect(size?.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  expect(size?.height).toBe(page.viewportSize()?.height);
+  expect(size?.width).toBe(page.viewportSize()?.width);
+  if (desktop) await expect(page.locator('.bottom-dock')).toBeHidden();
+  expect(await frame.evaluate(el => getComputedStyle(el).overflow)).toBe('hidden');
+  expect(await frame.evaluate(el => getComputedStyle(el).backgroundImage)).toBe('none');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(true);
+  expect(await page.locator('.reference-feed-stream').evaluate(el => getComputedStyle(el).overflowY)).toBe('auto');
   if (desktop) {
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
@@ -105,18 +119,22 @@ test('premium home interactions and the 40-module directory work', async ({ page
     await page.getByRole('button', { name: 'পরের ব্যানার' }).click();
     await expect(page.getByRole('button', { name: 'স্লাইড 1' })).toHaveAttribute('aria-pressed', 'true');
   }
-  await page.getByRole('button', { name: 'টিকার থামান' }).click();
-  await expect(page.locator('.ticker-track')).toHaveCSS('animation-play-state', 'paused');
-  await page.getByRole('button', { name: 'টিকার চালু করুন' }).click();
+  if (desktop) {
+    await page.getByRole('button', { name: 'টিকার থামান' }).click();
+    await expect(page.locator('.ticker-track')).toHaveCSS('animation-play-state', 'paused');
+    await page.getByRole('button', { name: 'টিকার চালু করুন' }).click();
+  }
 
   await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
   await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
   await expect(page.getByRole('button', { name: 'এলাকা বেছে নিন' })).toContainText('ঢাকা');
 
-  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
-  await expect(page.locator('.hero-copy')).toContainText('হাতের নাগালে');
-  await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
-  await expect(cards).toHaveCount(5);
+  await page.getByRole('button', { name: 'স্লাইড 3' }).click();
+  await expect(page.locator('.hero-copy')).toContainText('সর্বশেষ অফার');
+  if (!desktop) {
+    await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
+    await expect(cards).toHaveCount(5);
+  }
 
   await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();
@@ -126,6 +144,42 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await page.getByRole('link', { name: /Porai/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Porai' })).toBeVisible();
   await expect(page.getByRole('status')).toContainText('এখনো চালু করা হয়নি');
+});
+
+test('the reference carousel rotates and can be paused', async ({ page }) => {
+  await page.goto('/');
+  const banner = page.locator('.hero-banner');
+  await expect(banner).toHaveAttribute('data-banner', '1');
+  await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'স্লাইড 4' })).toHaveCount(0);
+  await expect(banner).toHaveAttribute('data-banner', '2', { timeout: 4000 });
+  await expect(banner).toContainText('Google Play');
+  await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
+  await page.getByRole('button', { name: 'স্লাইড 3' }).click();
+  await expect(banner.getByRole('link', { name: 'অফার দেখুন' })).toHaveAttribute('href', '/feed?category=deals');
+  await expect(page.getByRole('button', { name: 'ব্যানার চালু করুন' })).toBeVisible();
+});
+
+test('center navigation opens Nearby and listing results can expand without moving the chrome', async ({ page }) => {
+  await page.route('https://tile.openstreetmap.org/**', route => route.abort());
+  await page.goto('/');
+  if ((page.viewportSize()?.width ?? 0) >= 1100) {
+    await page.getByRole('navigation', { name:'ডেস্কটপ সাইডবার' }).getByRole('link', { name:'কাছাকাছি',exact:true }).click();
+  } else {
+    await page.getByRole('navigation', { name:'নিচের নেভিগেশন' }).getByRole('link', { name:'খুঁজুন' }).click();
+  }
+  await expect(page.getByRole('heading', { name:'কাছাকাছি সেবা ও পোস্ট' })).toBeVisible();
+  await page.getByRole('button', { name:'বড় ম্যাপ দেখুন' }).click();
+  await expect(page.locator('.nearby-map')).toHaveClass(/nearby-map-expanded/);
+  await page.getByRole('button', { name:'বড় ম্যাপ বন্ধ করুন' }).click();
+  await page.goto('/jobs');
+  await expect(page.getByRole('heading', { name:'চাকরিচাই' })).toBeVisible();
+  const box = await page.locator('.app-header').boundingBox();
+  await page.getByRole('link', { name:'বড় ভিউ' }).click();
+  await expect(page.locator('.fixed-listing-frame')).toHaveClass(/is-expanded/);
+  expect((await page.locator('.app-header').boundingBox())?.y).toEqual(box?.y);
+  await page.goto('/tuition');
+  await expect(page.getByRole('heading', { name:'পড়াই · টিউশন' })).toBeVisible();
 });
 
 test('live feed and filter sheet match the supplied inner-page structure', async ({ page }) => {

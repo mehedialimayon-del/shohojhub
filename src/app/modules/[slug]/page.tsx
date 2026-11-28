@@ -18,6 +18,7 @@ export default async function ModulePage({ params }: { params: Promise<{ slug: s
   const state = hubModule.enabledKey && client
     ? await client.from('system_modules').select('enabled').eq('module_key', hubModule.enabledKey).maybeSingle()
     : null;
+  const previewListings = slug === 'porai' ? '/tuition' : slug === 'chakrichai' ? '/jobs' : null;
   const enabled = slug === 'my-dashboard' || Boolean(hubModule.enabledKey && state?.data?.enabled);
 
   return <main className="hub-width page-content module-detail">
@@ -37,6 +38,7 @@ export default async function ModulePage({ params }: { params: Promise<{ slug: s
         {enabled && hubModule.enabledKey === 'porai' && <Link href="/account" className="hub-button">অ্যাকাউন্টে যান <ArrowRight size={17} /></Link>}
         {enabled && hubModule.enabledKey === 'messaging' && <Link href="/connect" className="hub-button">Shohoj Connect খুলুন <ArrowRight size={17} /></Link>}
         {slug === 'my-dashboard' && <Link href="/dashboard" className="hub-button">ড্যাশবোর্ড খুলুন <ArrowRight size={17} /></Link>}
+        {previewListings && <Link href={previewListings} className="hub-button">প্রকাশিত তালিকা দেখুন <ArrowRight size={17} /></Link>}
         {slug === 'amar-chahida' && <>
           <Link href="/feed?intent=need" className="hub-button">প্রয়োজনের পোস্ট দেখুন</Link>
           <Link href="/posts/new?intent=need" className="hub-button hub-button-outline">আমার প্রয়োজন পোস্ট করুন</Link>

@@ -1,5 +1,6 @@
 import { submitPost } from '@/app/posts/actions';
 import { divisions, postCategories, postIntents, type Post } from '@/lib/feed';
+import PublicPostLocation from './PublicPostLocation';
 
 export default function PostForm({ post, intent = 'general' }: { post?: Post; intent?: string }) {
   return <form action={submitPost} className="hub-card post-form">
@@ -28,6 +29,7 @@ export default function PostForm({ post, intent = 'general' }: { post?: Post; in
       <option value="personal">ব্যক্তিগত</option><option value="business">ব্যবসায়িক</option>
     </select></label>
     <label>যোগাযোগের নাম<input className="hub-input" name="contactName" required minLength={2} maxLength={100} defaultValue={post?.contact_name} /></label>
+    <PublicPostLocation initialLat={post?.map_lat} initialLng={post?.map_lng} />
     <p className="post-review-note">যোগাযোগের নাম প্রকাশিত পোস্টে দেখাবে। ছবি যোগ করতে প্রথমে পোস্ট জমা দিন।</p>
     <button className="hub-button" type="submit">{post ? 'পরিবর্তন সংরক্ষণ করুন' : 'রিভিউয়ের জন্য জমা দিন'}</button>
   </form>;

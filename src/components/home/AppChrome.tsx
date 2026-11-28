@@ -9,7 +9,7 @@ import { ArrowLeft, Bell, BookOpen, BriefcaseBusiness, GraduationCap, Grid2X2, H
 const desktopNav = [
   ['হোম', '/', Home], ['ক্যাটাগরি', '/modules', Grid2X2], ['সেবা', '/feed?category=services', Handshake],
   ['ডিলস', '/feed?category=deals', Tag], ['শিক্ষা', '/modules/examarena-bd', GraduationCap],
-  ['চাকরি', '/feed?category=jobs', BriefcaseBusiness], ['টুলস', '/modules/shohojtools', Wrench],
+  ['চাকরি', '/jobs', BriefcaseBusiness], ['টুলস', '/modules/shohojtools', Wrench],
   ['ব্লগ', '/modules/success-stories', BookOpen],
 ] as const;
 
@@ -24,10 +24,18 @@ export default function AppChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isFeed = pathname.startsWith('/feed');
   const isHome = pathname === '/';
+  const fixedListings = ['/jobs','/tuition','/nearby'].includes(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className={`hub-app${isHome ? ' hub-home-app' : ''}`}>
+    <div className={`hub-app${isHome ? ' hub-home-app reference-home-shell' : (isFeed || fixedListings) ? ' fixed-listing-shell' : ''}`} onPointerDownCapture={event => {
+      if (pathname !== '/' || !(event.target instanceof Element)) return;
+      const control = event.target.closest('button:not(:disabled),a[href]');
+      control?.animate([
+        { boxShadow: '0 0 14px #ffc85d, inset 0 0 12px #ff8900b3' },
+        { boxShadow: '0 0 0 #ff890000, inset 0 0 0 #ff890000' },
+      ], { duration: 420, easing: 'ease-out' });
+    }}>
       <header className="app-header">
         {isFeed ? <div className="app-header-inner feed-app-header">
           <Link href="/" className="round-tool" aria-label="হোমে ফিরুন"><ArrowLeft size={21} /></Link>
@@ -54,7 +62,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
         </div>}
       </header>
 
-      {!isFeed && <aside className="desktop-sidebar">
+      {!isFeed && !fixedListings && <aside className="desktop-sidebar">
         <nav aria-label="ডেস্কটপ সাইডবার">
           {sidebarNav.map(([label, href, Icon]) => <Link href={href} key={label} aria-current={pathname === href ? 'page' : undefined}><Icon aria-hidden /><span>{label}</span></Link>)}
         </nav>
@@ -65,7 +73,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
             <div><span aria-disabled="true"><Play aria-hidden /> Google Play</span><span aria-disabled="true"><Smartphone aria-hidden /> App Store</span></div>
           </div>
           <p>স্টোরে প্রকাশের পর ডাউনলোড লিংক পাওয়া যাবে।</p>
-          <Link href="/modules" className="hub-button hub-button-outline">এখন ওয়েবে দেখুন</Link>
+          <Link href="/?banner=2" className="hub-button hub-button-outline">অ্যাপ ও ডাউনলোডের তথ্য</Link>
         </section>
       </aside>}
 
@@ -81,12 +89,12 @@ export default function AppChrome({ children }: { children: ReactNode }) {
         </nav>
       </div>}
 
-      <div className={isFeed ? 'app-main' : 'app-main has-desktop-sidebar'} id="main-content">{children}</div>
+      <div className={isFeed || fixedListings ? 'app-main' : 'app-main has-desktop-sidebar'} id="main-content">{children}</div>
 
       <nav className="bottom-dock" aria-label="নিচের নেভিগেশন">
         <Link href="/" aria-current={pathname === '/' ? 'page' : undefined} className="dock-item"><Home size={23} /><span>হোম</span></Link>
         <Link href="/modules" aria-current={pathname.startsWith('/modules') ? 'page' : undefined} className="dock-item"><Grid2X2 size={23} /><span>মডিউল</span></Link>
-        <Link href="/#search" className="dock-search" aria-label="খুঁজুন"><span className="dock-search-icon"><Search aria-hidden /></span><span>খুঁজুন</span></Link>
+        <Link href="/nearby" className="dock-search" aria-label="খুঁজুন" aria-current={pathname === '/nearby' ? 'page' : undefined}><span className="dock-search-icon"><Search aria-hidden /></span><span>খুঁজুন</span></Link>
         <Link href="/posts/new" aria-current={pathname === '/posts/new' ? 'page' : undefined} className="dock-item"><PenSquare size={23} /><span>পোস্ট করুন</span></Link>
         <Link href="/dashboard" aria-current={pathname === '/dashboard' ? 'page' : undefined} className="dock-item"><UserRound size={23} /><span>আমার</span></Link>
       </nav>
