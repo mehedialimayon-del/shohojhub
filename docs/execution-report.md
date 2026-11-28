@@ -26,7 +26,7 @@ The 40 module cards remain a catalogue. A catalogue entry is not counted as a co
 - Supabase project `shohojhub-test` (`zziayimtyjbwldpghrzc`) was inspected before the database check. Migration `20261128072604_public_post_map_pins` was already present; it was not applied a second time.
 - Ran the public map-pin policy/constraint check against the test project inside a rolled-back transaction. Draft coordinates stayed private, approved public coordinates were visible, and partial pins were rejected.
 - `npm run typecheck`, `npm run lint`, `npm test` (12/12), `npm run build`, and `git diff --check` pass.
-- Local browser acceptance is blocked because Playwright Chromium is absent and its download endpoint returns HTTP 403. Push this branch through GitHub Actions for fresh desktop/tablet/mobile browser CI before claiming visual or end-to-end acceptance.
+- Local browser acceptance is blocked because Playwright Chromium is absent and its download endpoint returns HTTP 403. GitHub Actions run #82 passed the responsive browser suite (27 passed, 6 skipped) and the isolated-Supabase signed-in tests. This verifies the exercised layouts and flows, but is not pixel-level acceptance on the user's Samsung devices.
 
 ## Still required
 
