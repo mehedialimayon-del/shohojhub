@@ -1,11 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight, Bell, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, FileText,
   BookOpen, BriefcaseBusiness, ChartNoAxesCombined, Clock3, Coins, Cpu, Flame, Globe2, GraduationCap, Grid2X2, Heart,
-  House, Laptop, MapPin, Megaphone, Play, Radio, ShieldCheck, ShoppingCart, SlidersHorizontal, Store, Tag, Trophy, Wrench,
+  House, Laptop, MapPin, Megaphone, Pause, Play, Radio, ShieldCheck, ShoppingCart, SlidersHorizontal, Store, Tag, Trophy, Wrench,
 } from 'lucide-react';
 import Image from 'next/image';
 import BangladeshLiveClock from '@/components/BangladeshLiveClock';
@@ -22,7 +22,6 @@ const quickActions = [
 ];
 
 const feedFilters = ['সব পোস্ট', 'চাকরি', 'টিউশন', 'পণ্য', 'সেবা', 'অফার', 'শিক্ষা'];
-
 const featuredIcons = {
   chaikini: ShoppingCart, haatbazar: Store, porai: GraduationCap, 'examarena-bd': BookOpen,
   'an-overseas': Globe2, chakrichai: BriefcaseBusiness, shebachai: Wrench, varachai: House,
@@ -44,10 +43,8 @@ const mobileFeatured = [
 ];
 
 const slides = [
-  { first: 'বাংলাদেশের', second: 'সব প্রয়োজনে', third: 'এক প্ল্যাটফর্ম!', checks: ['খুঁজুন', 'সংযুক্ত হন', 'শিখুন', 'আয় করুন'], href: '/modules', link: 'সব সেবা' },
-  { first: 'আপনার এলাকার', second: 'প্রয়োজনীয় সেবা', third: 'হাতের নাগালে!', checks: ['দোকান', 'শিক্ষা', 'চাকরি', 'সহায়তা'], href: '/nearby', link: 'কাছাকাছি খুঁজুন' },
-  { first: 'এক জায়গায়', second: 'কাজ ও সুযোগ', third: 'সহজে খুঁজুন!', checks: ['ব্রাউজ', 'আবেদন', 'যোগাযোগ', 'এগিয়ে যান'], href: '/feed?category=jobs', link: 'চাকরি দেখুন' },
-  { first: 'সহজ হাব BD', second: 'সর্বশেষ অফার', third: 'এক নজরে!', checks: ['স্থানীয়', 'সহজে খুঁজুন'], href: '/feed?category=deals', link: 'অফার দেখুন' },
+  { first: 'বাংলাদেশের', second: 'সব প্রয়োজনে', third: 'এক প্ল্যাটফর্ম!', checks: ['খুঁজুন', 'সংযুক্ত হন', 'শিখুন', 'আয় করুন'], href: '/modules', link: 'সব সেবা', kind: 'home' },
+  { first: 'সহজ হাব BD', second: 'Android অ্যাপ', third: 'Google Play', checks: [], href: '/modules', link: 'ওয়েবে চালিয়ে যান', kind: 'download' },
 ];
 
 type RecentPost = { id: string; category: string; title: string; division: string; district: string; area: string | null; price_min_paisa: number | null; price_max_paisa: number | null; published_at: string | null; has_photo: boolean };
@@ -58,8 +55,11 @@ function postPrice({ price_min_paisa: min, price_max_paisa: max }: RecentPost) {
   const first = taka.format((min ?? max ?? 0) / 100);
   return '৳ ' + (min !== null && max !== null && max !== min ? `${first} – ${taka.format(max / 100)}` : first);
 }
-export default function HomeExperience({ initialSlide, enabledModuleKeys, recentPosts }: { initialSlide: number; enabledModuleKeys: string[]; recentPosts: RecentPost[] }) {
-  const [slideIndex, setSlideIndex] = useState(initialSlide);
+export default function HomeExperience({ initialSlide, enabledModuleKeys, recentPosts, storeUrl, offer }: {
+  initialSlide: number; enabledModuleKeys: string[]; recentPosts: RecentPost[]; storeUrl?: string;
+  offer: Pick<RecentPost, 'id' | 'title' | 'has_photo'> | null;
+}) {
+  const [slideIndex, setSlideIndex] = useState(Math.min(initialSlide, offer ? 2 : 1));
   const [filterOpen, setFilterOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [category, setCategory] = useState('সব ক্যাটাগরি');
@@ -74,12 +74,26 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
       return { ...item, href: `/modules/${item.slug}`, iconComponent: featuredIcons[item.slug as keyof typeof featuredIcons] };
     }).filter((item) => item !== null),
   ], []);
+  const [bannerPaused, setBannerPaused] = useState(false);
+  const [downloadNotice, setDownloadNotice] = useState(false);
   const visibleFeatured = featured.filter((item) => category === 'সব ক্যাটাগরি' || item.category === category);
   const orderedFeatured = trending ? visibleFeatured.slice(0, 5) : visibleFeatured;
-  const slide = slides[slideIndex];
+  const slidesForHome = offer ? [...slides, { first: 'সহজ হাব BD', second: 'সর্বশেষ অফার', third: offer.title, checks: ['স্থানীয়', 'সহজে খুঁজুন'], href: '/feed?category=deals', link: 'অফার দেখুন', kind: 'offer' }] : slides;
+  const slide = slidesForHome[slideIndex] ?? slidesForHome[0];
+  const activeOffer = slide.kind === 'offer' ? offer : null;
+  const bannerHref = slide.kind === 'download' ? storeUrl ?? slide.href : activeOffer ? '/posts/' + activeOffer.id : slide.href;
+  const bannerLabel = slide.kind === 'download' && storeUrl ? 'Google Play থেকে ডাউনলোড করুন' : slide.link;
+
+  useEffect(() => {
+    if (bannerPaused || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const timer = window.setTimeout(() => {
+      setSlideIndex(index => (index + 1) % slidesForHome.length);
+    }, 2000);
+    return () => window.clearTimeout(timer);
+  }, [bannerPaused, slideIndex, slidesForHome.length]);
 
   return (
-    <main className="home-content hub-width">
+    <main className={'home-content hub-width' + (trending || category !== 'সব ক্যাটাগরি' ? ' ref-filtered' : '')}>
       <section className="home-search-stack" aria-label="প্রধান সার্চ ও ফিল্টার">
         <DirectorySearch compact />
         <div className="filter-row">
@@ -116,20 +130,27 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
         </button>
       </div>
 
-      <section className="hero-banner" aria-label="সহজ হাব BD পরিচিতি">
+      <section className={'hero-banner' + (slide.kind === 'home' ? ' is-reference-slide' : slide.kind === 'download' ? ' is-download-slide' : '')} aria-label="সহজ হাব BD পরিচিতি" data-banner={slideIndex + 1}>
         <h1 className="sr-only">সহজ হাব BD</h1>
-        {slideIndex === 0
+        {slide.kind === 'download' ? <a className="hero-banner-hotspot" href={storeUrl ?? '#'} target={storeUrl ? '_blank' : undefined} rel={storeUrl ? 'noreferrer' : undefined} aria-label={storeUrl ? bannerLabel : 'Google Play ডাউনলোড লিংক এখনো যুক্ত হয়নি'} onClick={(event) => { if (!storeUrl) { event.preventDefault(); setDownloadNotice(true); } }} /> : <Link className="hero-banner-hotspot" href={bannerHref} aria-label={bannerLabel} />}
+        {slide.kind === 'download'
+          ? <Image className="hero-download-art" src="/brand/shohojhub-app-download.png" alt="সহজ হাব BD অ্যাপ Google Play থেকে ডাউনলোড করুন" fill priority sizes="(min-width: 1100px) 60vw, 100vw" />
+          : slide.kind === 'home'
           ? <div className="hero-reference-art" aria-hidden="true" />
+          : activeOffer?.has_photo ? <Image className="hero-offer-photo" src={'/api/posts/' + activeOffer.id + '/photo'} unoptimized alt="" fill />
           : <div className="hero-landscape" aria-hidden="true"><span className="hero-sun" /><span className="hero-memorial"><i /><i /><i /></span><span className="hero-flag"><i /></span><span className="hero-horizon" /></div>}
         <div className="hero-copy">
-          <p>{slide.first}</p><p>{slide.second}</p><strong>{slide.third}</strong>
+          {slide.kind !== 'download' && <><p>{slide.first}</p><p>{slide.second}</p><strong className={activeOffer ? 'hero-offer-title' : undefined}>{activeOffer?.title ?? slide.third}</strong></>}
           <div className="hero-checks">{slide.checks.map((item) => <span key={item}><b>✓</b>{item}</span>)}</div>
+          {slide.kind === 'download' && !storeUrl && <p className="store-release-note sr-only">Google Play-তে প্রকাশের পর ডাউনলোড লিংক পাওয়া যাবে।</p>}
         </div>
-        <button className="hero-arrow hero-prev" type="button" aria-label="আগের ব্যানার" onClick={() => setSlideIndex((slideIndex + slides.length - 1) % slides.length)}><ChevronLeft /></button>
-        <button className="hero-arrow hero-next" type="button" aria-label="পরের ব্যানার" onClick={() => setSlideIndex((slideIndex + 1) % slides.length)}><ChevronRight /></button>
-        <Link className="hero-cta" href={slide.href}>{slide.link} <ArrowRight size={15} /></Link>
-        <div className="hero-dots" role="group" aria-label="ব্যানার স্লাইড বেছে নিন">{slides.map((item, index) => <button key={item.third} type="button" aria-label={`স্লাইড ${index + 1}`} aria-pressed={slideIndex === index} className={slideIndex === index ? 'selected' : ''} onClick={() => setSlideIndex(index)} />)}</div>
+        <button className="hero-arrow hero-prev" type="button" aria-label="আগের ব্যানার" onClick={() => setSlideIndex((slideIndex + slidesForHome.length - 1) % slidesForHome.length)}><ChevronLeft /></button>
+        <button className="hero-arrow hero-next" type="button" aria-label="পরের ব্যানার" onClick={() => setSlideIndex((slideIndex + 1) % slidesForHome.length)}><ChevronRight /></button>
+        {slide.kind === 'download' ? <a className="hero-cta" href={storeUrl ?? '#'} target={storeUrl ? '_blank' : undefined} rel={storeUrl ? 'noreferrer' : undefined} onClick={(event) => { if (!storeUrl) { event.preventDefault(); setDownloadNotice(true); } }}>{bannerLabel} <ArrowRight size={15} /></a> : <Link className="hero-cta" href={bannerHref}>{bannerLabel} <ArrowRight size={15} /></Link>}
+        <div className="hero-dots" role="group" aria-label="ব্যানার স্লাইড বেছে নিন">{slidesForHome.map((item, index) => <button key={item.kind} type="button" aria-label={`স্লাইড ${index + 1}`} aria-pressed={slideIndex === index} className={slideIndex === index ? 'selected' : ''} onClick={() => setSlideIndex(index)} />)}</div>
+        <button className="hero-pause" type="button" aria-label={bannerPaused ? 'ব্যানার চালু করুন' : 'ব্যানার থামান'} onClick={() => setBannerPaused(!bannerPaused)}>{bannerPaused ? <Play /> : <Pause />}</button>
       </section>
+      {downloadNotice && <button type="button" className="download-notice" role="status" onClick={() => setDownloadNotice(false)}>Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে <span aria-hidden>×</span></button>}
 
       <section className="desktop-home-promo" aria-label="সহজ হাবের সেবা">
         <div><strong>চাকরি, শিক্ষা, ব্যবসা, সেবা ও দৈনন্দিন জীবন</strong><span>এখন এক জায়গায়</span><Link href="/modules">সহজ হাব BD <ArrowRight size={20} /></Link></div>
@@ -147,7 +168,8 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
             if (!item) return null;
             const enabled = Boolean(item.enabledKey && enabledModuleKeys.includes(item.enabledKey));
             const Icon = item.iconComponent;
-            return <Link href={item.href} key={item.slug} className={`module-card tone-${item.tone}${desktopFeatured.includes(item.slug) ? ' desktop-only-module' : ''}`} aria-label={`${item.name}: ${item.title}${enabled ? '' : ', প্রস্তুত হচ্ছে'}`}>
+            const href = item.slug === 'chakrichai' ? '/jobs' : item.slug === 'porai' ? '/tuition' : item.href;
+            return <Link href={href} key={item.slug} className={`module-card tone-${item.tone}${desktopFeatured.includes(item.slug) ? ' desktop-only-module' : ''}`} aria-label={`${item.name}: ${item.title}${enabled || href === '/jobs' || href === '/tuition' ? '' : ', প্রস্তুত হচ্ছে'}`}>
               <span className="module-card-icon" aria-hidden>{Icon && <Icon />}</span><strong>{item.name}</strong><span>{item.title}</span>
             </Link>;
           })}
@@ -159,6 +181,7 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
         <div className="feed-filters" id="feed-filters" role="group" aria-label="ফিডের ধরন বেছে নিন">
           {feedFilters.map((item) => <Link key={item} href={item === 'সব পোস্ট' ? '/feed' : `/feed?category=${encodeURIComponent(item)}`} className={item === 'সব পোস্ট' ? 'active' : ''}>{item}</Link>)}
         </div>
+        <div className="reference-feed-stream" tabIndex={0} aria-label="স্ক্রলযোগ্য ফিডের পোস্ট">
         {recentPosts.length ? <div className="home-feed-posts">{recentPosts.map((post) => <Link key={post.id} href={`/posts/${post.id}`} className="home-feed-post">
           <span className="home-feed-post-icon">{post.has_photo ? <Image width={108} height={80} src={`/api/posts/${post.id}/photo`} unoptimized alt="" /> : <Bell size={21} />}</span>
           <span><b>{post.category === 'jobs' ? 'চাকরিচাই' : post.category === 'products' ? 'পণ্য' : post.category === 'tuition' ? 'পড়াই' : 'সহজ হাব'}</b>
@@ -172,12 +195,12 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
           <div><strong>এখনো কোনো নতুন পোস্ট নেই</strong><p>প্রকাশিত ও যাচাইকৃত পোস্ট এলে এখানে দেখাবে।</p></div>
           <Link href="/feed" aria-label="লাইভ ফিড খুলুন"><ArrowRight size={19} /></Link>
         </div>}
-      </section>
-
-      <div className="home-post-actions flex flex-wrap gap-2 mt-3">
+      <div className="home-post-actions flex flex-wrap gap-2">
         <Link href="/posts/new?intent=need" className="hub-button">আমার প্রয়োজন</Link>
         <Link href="/posts/new?intent=offer" className="hub-button hub-button-outline">আমি সেবা দেব</Link>
       </div>
+      </div>
+      </section>
 
       <div className="desktop-home-links" aria-label="সহজ হাবের প্রয়োজনীয় লিংক">
         <strong>সহজ হাব BD</strong><Link href="/account"><ShieldCheck /> অ্যাকাউন্ট</Link><Link href="/nearby"><MapPin /> কাছাকাছি সেবা</Link>

@@ -94,6 +94,7 @@ export default function FeedExperience({ initial, posts, count, unavailable, pag
       <div className="feed-results-heading"><div><span><Radio size={19} /> লাইভ আপডেট</span><strong>{resultLabel}</strong></div><span className="feed-result-count">{unavailable ? 'লোড করা যায়নি' : `${price.format(count)}টি ফলাফল`}</span></div>
       <div className="feed-create-row"><p>প্রকাশিত ও যাচাইকৃত পোস্ট এখানে দেখা যাবে।</p><Link href="/posts/new" className="hub-button">＋ পোস্ট দিন</Link></div>
 
+      <div className="feed-scroll-contents" tabIndex={0} aria-label="স্ক্রলযোগ্য পূর্ণ লাইভ ফিড">
       {unavailable ? <section className="feed-empty feed-empty-page" role="alert"><span className="feed-empty-icon"><Radio size={23} /></span><div><strong>ফিড এখন লোড করা যাচ্ছে না</strong><p>সংযোগ ঠিক হলে আবার চেষ্টা করুন।</p></div><button className="hub-button hub-button-outline" type="button" onClick={() => router.refresh()}>আবার চেষ্টা</button></section> : posts.length === 0 ? <section className="feed-empty feed-empty-page" aria-live="polite"><span className="feed-empty-icon"><Radio size={23} /></span><div><strong>এখনো কোনো প্রকাশিত পোস্ট নেই</strong><p>পোস্ট জমা দিন; রিভিউ শেষে অনুমোদিত হলে এখানে দেখা যাবে।</p></div><Link href="/posts/new" className="hub-button hub-button-outline">পোস্ট দিন</Link></section> : <section className="feed-post-list" aria-label="প্রকাশিত পোস্ট">
         {posts.map((post) => <article className="feed-post-card" key={post.id}>
           {post.has_photo ? <Image src={'/api/posts/' + post.id + '/photo'} unoptimized width={100} height={90}
@@ -110,6 +111,7 @@ export default function FeedExperience({ initial, posts, count, unavailable, pag
         {page > 1 && <button className="hub-button hub-button-outline" onClick={() => navigate({}, page - 1)}>আগের পাতা</button>}
         {nextPage && <button className="hub-button" onClick={() => navigate({}, page + 1)}>পরের পাতা</button>}
       </nav>}
+      </div>
       <button className="feed-floating-filter" type="button" aria-label="বিস্তারিত ফিল্টার খুলুন" onClick={() => setFilterOpen(true)}><SlidersHorizontal size={23} /></button>
 
       {filterOpen && <div className="feed-filter-scrim" onMouseDown={(event) => { if (event.target === event.currentTarget) setFilterOpen(false); }}>

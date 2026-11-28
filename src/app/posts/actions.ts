@@ -36,6 +36,11 @@ export async function submitPost(form: FormData) {
   if (rawId && !postIdPattern.test(rawId)) redirect('/posts/manage?status=invalid');
   const path = rawId ? '/posts/' + rawId : '/posts/new';
   const client = await signedIn(path);
+  const sharedPin = form.get('publicPin') === 'on';
+  const mapLat = sharedPin ? Number(value(form,'mapLat')) : null;
+  const mapLng = sharedPin ? Number(value(form,'mapLng')) : null;
+  if (sharedPin && (mapLat === null || mapLng === null || !Number.isFinite(mapLat) || !Number.isFinite(mapLng)
+      || mapLat < 20 || mapLat > 27 || mapLng < 87 || mapLng > 93)) redirect(path + '?status=invalid');
   const fields = {
     category: value(form, 'category'),
     intent: value(form, 'intent'),
@@ -48,6 +53,8 @@ export async function submitPost(form: FormData) {
     post_type: value(form, 'postType'),
     price_min_paisa: wholeTaka(value(form, 'priceMin')),
     price_max_paisa: wholeTaka(value(form, 'priceMax')),
+    map_lat: mapLat,
+    map_lng: mapLng,
   };
   if (!Object.hasOwn(postCategories, fields.category) || !Object.hasOwn(postIntents, fields.intent)
     || fields.title.length < 5 || fields.title.length > 140 || fields.body.length < 20 || fields.body.length > 4000

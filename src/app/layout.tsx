@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+import './reference-home.css';
 import AppChrome from '@/components/home/AppChrome';
 
 export const metadata: Metadata = {
