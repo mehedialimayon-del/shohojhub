@@ -120,6 +120,7 @@
   .reference-home-shell .hero-checks { font-size: clamp(.65rem,.95vw,.9rem); }
   .reference-home-shell .hero-arrow, .reference-home-shell .hero-cta { display: inline-flex; }
   .reference-home-shell .hero-banner-hotspot { display: none; }
+  .reference-home-shell .hero-banner.is-download-slide .hero-banner-hotspot { display: block; }
   .reference-home-shell .desktop-home-promo { grid-area: promo; display: flex; align-items: center; min-height: 150px; height: 100%; }
   .reference-home-shell .desktop-home-links { grid-area: foot; display: flex; align-items: center; justify-content: space-around; gap: .5rem; min-height: 0; margin: 0; padding: .4rem .6rem; border: 1px solid #c8751a; border-radius: 13px; background: linear-gradient(105deg,#492000,#110907 60%); }
   .reference-home-shell .quick-actions { grid-area: quick; }
