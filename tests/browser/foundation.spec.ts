@@ -37,6 +37,8 @@ test('search retries a failed request and shows the empty result state', async (
 });
 
 test('server validates pagination and guards password reset', async ({ page, request }) => {
+  await page.goto('/business');
+  await expect(page).toHaveURL(/\/account(?:\?status=unavailable)?$/);
   const response = await request.get('/api/search?q=Dhaka&offset=501');
   expect(response.status()).toBe(400);
   await page.goto('/auth/update-password');

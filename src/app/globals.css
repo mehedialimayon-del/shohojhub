@@ -25,3 +25,7 @@ body { margin:0; background:#000; color:var(--sh-text); font-family:system-ui,sa
 #search { scroll-margin-top: 6rem; }
 
 .hub-search-input { padding-inline-start: 2.5rem; }
+@media print {
+  body:has(.hub-receipt) { background: white; color: black; }
+  .hub-receipt { max-width: none; }
+}
