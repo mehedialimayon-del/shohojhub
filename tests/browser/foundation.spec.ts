@@ -46,7 +46,7 @@ test('server validates pagination and guards password reset', async ({ page, req
   await page.goto('/auth/callback?next=https://outside.example');
   await expect(page).toHaveURL(/\/account\?status=invalid_link$/);
   await page.goto('/missing-page');
-  await page.locator('a[href="/"]').click();
+  await page.getByRole('link', { name: 'Back to Home', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('সহজ হাব BD');
 });
 
@@ -69,4 +69,46 @@ test('search displays supported result types with pagination', async ({ page }) 
   await expect(page.locator('li')).toContainText('পরীক্ষার পণ্য');
   await page.getByRole('button', { name: 'আগের পাতা' }).click();
   await expect(page.locator('li')).toHaveCount(2);
+});
+
+test('premium home interactions and the 40-module directory work', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
+  await expect(page.locator('.brand-pin')).toHaveAttribute('src', /shohojhub-pin\.png/);
+  await expect(page.locator('.brand-wordmark')).toHaveAttribute('src', /shohojhub-wordmark\.png/);
+  await expect(page.locator('.module-card')).toHaveCount(10);
+
+  await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
+  await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'এলাকা বেছে নিন' })).toContainText('ঢাকা');
+
+  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
+  await expect(page.locator('.hero-copy')).toContainText('হাতের নাগালে');
+  await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
+  await expect(page.locator('.module-card')).toHaveCount(5);
+
+  await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();
+  await expect(page.locator('.directory-card')).toHaveCount(40);
+  await page.getByRole('button', { name: 'শিক্ষা', exact: true }).click();
+  await expect(page.locator('.directory-card')).toHaveCount(3);
+  await page.getByRole('link', { name: /Porai/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Porai' })).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('এখনো চালু করা হয়নি');
+});
+
+test('live feed and filter sheet match the supplied inner-page structure', async ({ page }) => {
+  await page.goto('/feed');
+  await expect(page.getByRole('heading', { name: 'লাইভ ফিড' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'সব পোস্ট' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'বিস্তারিত ফিল্টার খুলুন' }).click();
+  const dialog = page.getByRole('dialog', { name: 'ফিল্টার করুন' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'চাকরি' }).click();
+  await expect(dialog.getByRole('button', { name: 'চাকরি' })).toHaveAttribute('aria-pressed', 'true');
+  await dialog.getByRole('button', { name: 'রিসেট' }).click();
+  await expect(dialog.getByRole('button', { name: 'চাকরি' })).toHaveAttribute('aria-pressed', 'false');
+  await dialog.getByRole('button', { name: /ফলাফল দেখুন/ }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByText('এখনো কোনো প্রকাশিত পোস্ট নেই')).toBeVisible();
 });

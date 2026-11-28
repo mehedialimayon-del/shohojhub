@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Mic, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type DirectoryEntry = {
@@ -13,7 +13,17 @@ type DirectoryEntry = {
 const labels = { university: 'বিশ্ববিদ্যালয়', shop: 'দোকান', product: 'পণ্য' };
 type SearchResult = { results: DirectoryEntry[]; next: number | null };
 
-export default function DirectorySearch() {
+type VoiceRecognition = {
+  lang: string;
+  interimResults: boolean;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+};
+type VoiceRecognitionConstructor = new () => VoiceRecognition;
+
+export default function DirectorySearch({ compact = false }: { compact?: boolean }) {
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -21,6 +31,28 @@ export default function DirectorySearch() {
   const [pending, setPending] = useState(false);
   const [retry, setRetry] = useState(0);
   const term = query.trim();
+
+  function startVoiceSearch() {
+    const speech = window as Window & { SpeechRecognition?: VoiceRecognitionConstructor; webkitSpeechRecognition?: VoiceRecognitionConstructor };
+    const Recognition = speech.SpeechRecognition ?? speech.webkitSpeechRecognition;
+    if (!Recognition) {
+      setError('এই ব্রাউজারে ভয়েস সার্চ চালু নেই। লিখে খুঁজুন।');
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.lang = 'bn-BD';
+    recognition.interimResults = false;
+    recognition.onresult = (event) => {
+      const value = event.results[0]?.[0]?.transcript ?? '';
+      setQuery(value);
+      setOffset(0);
+      setResult(null);
+      setError('');
+      setPending(value.trim().length >= 2);
+    };
+    recognition.onerror = () => setError('ভয়েস সার্চ পাওয়া যায়নি। লিখে খুঁজুন।');
+    recognition.start();
+  }
 
   useEffect(() => {
     if (term.length < 2) return;
@@ -55,12 +87,12 @@ export default function DirectorySearch() {
   }
 
   return (
-    <section id="search" className="mt-8 max-w-xl" aria-label="সেবা খোঁজ">
-      <label htmlFor="directory-search" className="mb-2 block font-semibold">খুঁজুন</label>
-      <div className="relative">
-        <Search size={19} className="absolute left-3 top-3.5 hub-accent" aria-hidden />
-        <input className="hub-input hub-search-input" id="directory-search" type="search" value={query} maxLength={80}
-          placeholder="নাম বা জেলা লিখুন" onChange={event => {
+    <section id="search" className={compact ? 'directory-search directory-search-compact' : 'directory-search'} aria-label="সেবা খোঁজ">
+      <label htmlFor="directory-search" className={compact ? 'sr-only' : 'mb-2 block font-semibold'}>সার্চ</label>
+      <div className="search-field">
+        <Search size={22} className="search-leading" aria-hidden />
+        <input className="hub-input hub-search-input" id="directory-search" type="search" role="searchbox" value={query} maxLength={80}
+          placeholder="আপনার প্রয়োজনীয় সেবা, পণ্য, চাকরি বা তথ্য খুঁজুন..." onChange={event => {
             const value = event.target.value;
             setQuery(value);
             if (value.trim() === term && offset === 0) return;
@@ -69,6 +101,7 @@ export default function DirectorySearch() {
             setError('');
             setPending(value.trim().length >= 2);
           }} />
+        {compact && <button type="button" className="search-voice" aria-label="ভয়েস সার্চ" onClick={startVoiceSearch}><Mic size={21} /></button>}
       </div>
       <div className="mt-3 text-sm text-neutral-300" role="status">
         {term.length === 1 && 'অন্তত ২টি অক্ষর লিখুন।'}
