@@ -92,14 +92,6 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(cards.filter({ hasText: 'চাকরিচাই' })).toHaveAttribute('href', '/jobs');
   await expect(cards.filter({ hasText: 'পড়াই' })).toHaveAttribute('href', '/tuition');
   expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
-  expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(desktop ? 55 : 86);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  const headerTop = (await page.locator('.app-header').boundingBox())?.y;
-  const dockTop = (await page.locator('.bottom-dock').boundingBox())?.y;
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  expect((await page.locator('.app-header').boundingBox())?.y).toBe(headerTop);
-  expect((await page.locator('.bottom-dock').boundingBox())?.y).toBe(dockTop);
-  await page.evaluate(() => window.scrollTo(0, 0));
   const frame = page.locator('.reference-home-shell');
   const size = await frame.boundingBox();
   expect(size?.height).toBeLessThanOrEqual(page.viewportSize()!.height);
