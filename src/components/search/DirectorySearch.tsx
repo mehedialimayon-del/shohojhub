@@ -1,16 +1,17 @@
 'use client';
 
 import { Mic, Search } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 type DirectoryEntry = {
-  kind: 'university' | 'shop' | 'product';
+  kind: 'university' | 'shop' | 'product' | 'post';
   id: string;
   title: string;
   secondary_title: string;
   district: string;
 };
-const labels = { university: 'বিশ্ববিদ্যালয়', shop: 'দোকান', product: 'পণ্য' };
+const labels = { university: 'বিশ্ববিদ্যালয়', shop: 'দোকান', product: 'পণ্য', post: 'পোস্ট' };
 type SearchResult = { results: DirectoryEntry[]; next: number | null };
 
 type VoiceRecognition = {
@@ -23,7 +24,7 @@ type VoiceRecognition = {
 };
 type VoiceRecognitionConstructor = new () => VoiceRecognition;
 
-export default function DirectorySearch({ compact = false }: { compact?: boolean }) {
+export default function DirectorySearch({ compact = false, district }: { compact?: boolean; district?: string }) {
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -31,6 +32,7 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
   const [voiceError, setVoiceError] = useState('');
   const [pending, setPending] = useState(false);
   const [retry, setRetry] = useState(0);
+  const [kind, setKind] = useState('');
   const term = query.trim();
 
   function startVoiceSearch() {
@@ -67,6 +69,8 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
     const timer = window.setTimeout(async () => {
       try {
         const params = new URLSearchParams({ q: term, offset: String(offset) });
+        if (district) params.set('district', district);
+        if (kind) params.set('kind', kind);
         const res = await fetch('/api/search?' + params, { signal: controller.signal });
         if (controller.signal.aborted) return;
         if (!res.ok) {
@@ -85,7 +89,7 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [term, offset, retry]);
+  }, [term, offset, retry, district, kind]);
 
   function changePage(page: number) {
     setOffset(page);
@@ -111,6 +115,13 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
           }} />
         {compact && <button type="button" className="search-voice" aria-label="ভয়েস সার্চ" onClick={startVoiceSearch}><Mic size={21} /></button>}
       </div>
+      {!compact && <label className="mt-3 flex items-center gap-2">ফলাফলের ধরন
+        <select className="hub-input max-w-48" value={kind} onChange={event => {
+          setKind(event.target.value); setOffset(0); setResult(null); setError(''); setPending(term.length >= 2);
+        }}><option value="">সব ফলাফল</option>
+          {Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+        </select>
+      </label>}
       <div className="mt-3 text-sm text-neutral-300" role="status">
         {term.length === 1 && 'অন্তত ২টি অক্ষর লিখুন।'}
         {pending && 'খোঁজা হচ্ছে…'}
@@ -124,7 +135,7 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
             {result.results.map(item => (
               <li className="hub-card" key={item.kind + ':' + item.id}>
                 <span className="mb-1 block text-xs text-neutral-300">{labels[item.kind]}</span>
-                <strong>{item.title}</strong>
+                {item.kind === 'post' ? <Link className="font-bold underline" href={'/posts/' + item.id}>{item.title}</Link> : <strong>{item.title}</strong>}
                 <span className="block text-sm text-neutral-300">{item.secondary_title}</span>
                 <span className="block text-sm text-neutral-300">{item.district}</span>
               </li>

@@ -103,9 +103,9 @@ test('members and moderators can complete the post lifecycle', async ({ page: ow
     await owner.getByRole('button', { name: 'পরিবর্তন সংরক্ষণ করুন' }).click();
     await expect(owner.getByRole('heading', { name: revisedTitle })).toBeVisible();
     await moderator.goto('/posts/review');
-    await moderator.locator('section').filter({ has: moderator.getByRole('link', { name: revisedTitle, exact: true }) })
-      .getByRole('button', { name: 'অনুমোদন করুন' }).click();
-    await expect(moderator.getByText('প্রকাশিত', { exact: true })).toBeVisible();
+    const revisedCard = moderator.locator('section').filter({ has: moderator.getByRole('link', { name: revisedTitle, exact: true }) });
+    await revisedCard.getByRole('button', { name: 'অনুমোদন করুন' }).click();
+    await expect(revisedCard.getByText('প্রকাশিত', { exact: true })).toBeVisible();
 
     const filters = new URLSearchParams({ intent: 'need', categories: 'services', division: 'ঢাকা', district: 'ঢাকা',
       area: 'মিরপুর', min: '300', max: '450', types: 'personal', q: suffix });

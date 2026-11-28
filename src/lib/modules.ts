@@ -54,7 +54,7 @@ export const modules: HubModule[] = [
 
 export const featuredModuleSlugs = [
   'chaikini', 'haatbazar', 'porai', 'examarena-bd', 'an-overseas',
-  'chakrichai', 'shebachai', 'varachai',
+  'chakrichai', 'shebachai', 'varachai', 'stock-manager', 'success-stories',
 ];
 
 export function getModule(slug: string) {
