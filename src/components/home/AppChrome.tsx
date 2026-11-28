@@ -23,10 +23,11 @@ const sidebarNav = [
 export default function AppChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isFeed = pathname.startsWith('/feed');
+  const isHome = pathname === '/';
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="hub-app">
+    <div className={`hub-app${isHome ? ' hub-home-app' : ''}`}>
       <header className="app-header">
         {isFeed ? <div className="app-header-inner feed-app-header">
           <Link href="/" className="round-tool" aria-label="হোমে ফিরুন"><ArrowLeft size={21} /></Link>

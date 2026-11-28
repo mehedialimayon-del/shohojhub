@@ -5,12 +5,12 @@ import { useMemo, useState } from 'react';
 import {
   ArrowRight, Bell, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, FileText,
   BookOpen, BriefcaseBusiness, ChartNoAxesCombined, Clock3, Coins, Cpu, Flame, Globe2, GraduationCap, Grid2X2, Heart,
-  House, Laptop, MapPin, Megaphone, Pause, Play, Radio, ShieldCheck, ShoppingCart, SlidersHorizontal, Store, Tag, Trophy, Wrench,
+  House, Laptop, MapPin, Megaphone, Play, Radio, ShieldCheck, ShoppingCart, SlidersHorizontal, Store, Tag, Trophy, Wrench,
 } from 'lucide-react';
 import Image from 'next/image';
 import BangladeshLiveClock from '@/components/BangladeshLiveClock';
 import DirectorySearch from '@/components/search/DirectorySearch';
-import { featuredModuleSlugs, modules } from '@/lib/modules';
+import { modules } from '@/lib/modules';
 
 const quickActions = [
   { label: 'ঘোষণা', icon: Megaphone, href: '/modules/advertising-center' },
@@ -30,6 +30,18 @@ const featuredIcons = {
   'shohojtools': BookOpen, 'ai-assistant': Cpu, 'referral-rewards': Coins, kajchai: BriefcaseBusiness,
 };
 const desktopFeatured = ['shohojtools', 'ai-assistant', 'referral-rewards', 'kajchai'];
+const mobileFeatured = [
+  { slug: 'chaikini', name: 'চায়াকিনি', title: 'অনলাইন কেনাকাটা', category: 'পণ্য', tone: 'green', href: '/modules/chaikini', enabledKey: 'storefront', iconComponent: ShoppingCart },
+  { slug: 'haatbazar', name: 'হাটবাজার', title: 'নতুন-পুরাতন পণ্য', category: 'পণ্য', tone: 'orange', href: '/modules/haatbazar', iconComponent: Store },
+  { slug: 'porai', name: 'পড়াই', title: 'টিউশন ও শিক্ষক', category: 'শিক্ষা', tone: 'blue', href: '/modules/porai', enabledKey: 'porai', iconComponent: GraduationCap },
+  { slug: 'examarena-bd', name: 'ExamArena BD', title: 'পরীক্ষা প্রস্তুতি ও ক্যারিয়ার', category: 'শিক্ষা', tone: 'purple', href: '/modules/examarena-bd', iconComponent: BookOpen },
+  { slug: 'an-overseas', name: 'A&N Overseas', title: 'বিদেশে উচ্চশিক্ষা ও স্কলারশিপ', category: 'শিক্ষা', tone: 'pink', href: '/modules/an-overseas', iconComponent: Globe2 },
+  { slug: 'chakrichai', name: 'চাকরিচাই', title: 'চাকরি ও নিয়োগ', category: 'চাকরি', tone: 'amber', href: '/modules/chakrichai', iconComponent: BriefcaseBusiness },
+  { slug: 'shebachai', name: 'সেবাচাই', title: 'মেরামত ও স্থানীয় সেবা', category: 'সেবা', tone: 'red', href: '/modules/shebachai', iconComponent: Wrench },
+  { slug: 'varachai', name: 'বাসাচাই', title: 'বাড়ি, রুম ও বাসস্থান', category: 'সেবা', tone: 'green', href: '/modules/varachai', iconComponent: House },
+  { slug: 'business-tools', name: 'Business Tools', title: 'ব্যবসার ডিজিটাল টুলস', category: 'ব্যবসা', tone: 'blue', href: '/business', iconComponent: ChartNoAxesCombined },
+  { slug: 'an-media-hub', name: 'AN Media Hub', title: 'শিক্ষা, টিপস ও কনটেন্ট', category: 'শিক্ষা', tone: 'blue', href: '/feed?category=education', iconComponent: Play },
+];
 
 const slides = [
   { first: 'বাংলাদেশের', second: 'সব প্রয়োজনে', third: 'এক প্ল্যাটফর্ম!', checks: ['খুঁজুন', 'সংযুক্ত হন', 'শিখুন', 'আয় করুন'], href: '/modules', link: 'সব সেবা' },
@@ -54,7 +66,14 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
   const [district, setDistrict] = useState('সারা বাংলাদেশ');
   const [trending, setTrending] = useState(false);
   const [tickerPaused, setTickerPaused] = useState(false);
-  const featured = useMemo(() => [...featuredModuleSlugs, ...desktopFeatured].map((slug) => modules.find((item) => item.slug === slug)).filter((item) => item !== undefined), []);
+  const featured = useMemo(() => [
+    ...mobileFeatured,
+    ...desktopFeatured.map((slug) => {
+      const item = modules.find((module) => module.slug === slug);
+      if (!item) return null;
+      return { ...item, href: `/modules/${item.slug}`, iconComponent: featuredIcons[item.slug as keyof typeof featuredIcons] };
+    }).filter((item) => item !== null),
+  ], []);
   const visibleFeatured = featured.filter((item) => category === 'সব ক্যাটাগরি' || item.category === category);
   const orderedFeatured = trending ? visibleFeatured.slice(0, 5) : visibleFeatured;
   const slide = slides[slideIndex];
@@ -93,7 +112,7 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
         <div className="ticker-window"><div className={`ticker-track${tickerPaused ? ' ticker-paused' : ''}`}><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span><b>•</b><span>বিশেষ অফার</span><b>•</b><span>শিক্ষা তথ্য</span><b>•</b><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span></div></div>
         <button type="button" className="ticker-next" aria-label={tickerPaused ? 'টিকার চালু করুন' : 'টিকার থামান'}
           onClick={() => setTickerPaused(paused => !paused)}>
-          {tickerPaused ? <Play size={18} /> : <Pause size={18} />}
+          <ChevronRight size={18} />
         </button>
       </div>
 
@@ -127,9 +146,9 @@ export default function HomeExperience({ initialSlide, enabledModuleKeys, recent
           {orderedFeatured.map((item) => {
             if (!item) return null;
             const enabled = Boolean(item.enabledKey && enabledModuleKeys.includes(item.enabledKey));
-            const Icon = featuredIcons[item.slug as keyof typeof featuredIcons];
-            return <Link href={`/modules/${item.slug}`} key={item.slug} className={`module-card tone-${item.tone}${desktopFeatured.includes(item.slug) ? ' desktop-only-module' : ''}`} aria-label={`${item.name}: ${item.title}${enabled ? '' : ', প্রস্তুত হচ্ছে'}`}>
-              <span className="module-card-icon" aria-hidden>{Icon ? <Icon /> : item.icon}</span><strong>{item.name}</strong><span>{item.title}</span>
+            const Icon = item.iconComponent;
+            return <Link href={item.href} key={item.slug} className={`module-card tone-${item.tone}${desktopFeatured.includes(item.slug) ? ' desktop-only-module' : ''}`} aria-label={`${item.name}: ${item.title}${enabled ? '' : ', প্রস্তুত হচ্ছে'}`}>
+              <span className="module-card-icon" aria-hidden>{Icon && <Icon />}</span><strong>{item.name}</strong><span>{item.title}</span>
             </Link>;
           })}
         </div>
