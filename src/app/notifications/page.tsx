@@ -17,7 +17,7 @@ export default async function Notifications({ searchParams }: { searchParams: Pr
     <h1 className="mb-4 text-2xl font-bold">নোটিফিকেশন</h1>
     <Link href="/connect" className="back-link">Shohoj Connect</Link>
     {!module.data?.enabled || result.error ? <p role="status">নোটিফিকেশন এখন পাওয়া যাচ্ছে না।</p> : <>
-      <ConnectRealtime url={process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''} anonKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''} userId={userId} notifications />
+      <ConnectRealtime url={process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''} anonKey={process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''} userId={userId} />
       <PushPreference keyValue={publicPushKey()} />
       {notices.length ? <ul className="grid gap-2">
         {notices.slice(0,20).map(notice => {

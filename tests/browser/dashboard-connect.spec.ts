@@ -102,9 +102,12 @@ test('dashboard consent, nearby search, two-user chat and notifications work', a
     await sender.getByLabel('বার্তা লিখুন').fill(message);
     await sender.getByRole('button', { name: 'বার্তা পাঠান' }).click();
     await expect(sender.getByText(message)).toBeVisible();
+    await recipient.bringToFront();
     await expect(recipient.getByText(message)).toBeVisible({ timeout: 18_000 });
+    expect(realtimeEvents).toContain('broadcast');
     await recipient.getByRole('link', { name: new RegExp(message) }).click();
     await expect(recipient.getByText(message)).toBeVisible();
+    await sender.bringToFront();
     await expect(sender.getByText(/পড়া হয়েছে/)).toBeVisible({ timeout: 15_000 });
     const invisible = await observer.from('messages').select('id');
     expect(invisible.data).toEqual([]);

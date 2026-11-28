@@ -214,3 +214,23 @@ grant insert (endpoint,p256dh,auth), update (endpoint,p256dh,auth,updated_at) on
 create policy manage_own_push_subscription on public.push_subscriptions for all to authenticated
 using (user_id = (select auth.uid()) and (select shohojhub_private.active_role()) is not null)
 with check (user_id = (select auth.uid()) and (select shohojhub_private.active_role()) is not null);
+
+-- Broadcast a change signal over each participant's private Realtime topic.
+-- The signal contains no message content. Pages still read through table RLS.
+create policy private_shohoj_connect_events on realtime.messages for select to authenticated
+using (extension = 'broadcast' and (select realtime.topic()) = 'shohojhub:account:' || (select auth.uid())::text);
+
+create function shohojhub_private.signal_conversation_change()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  perform realtime.send('{}'::jsonb, 'conversation_changed', 'shohojhub:account:' || new.sender_id::text, true);
+  perform realtime.send('{}'::jsonb, 'conversation_changed', 'shohojhub:account:' || new.recipient_id::text, true);
+  return null;
+end;
+$$;
+
+revoke all on function shohojhub_private.signal_conversation_change() from public, anon, authenticated, service_role;
+
+create trigger shohojhub_signal_conversation_change
+after insert or update of read_at on public.messages for each row
+execute function shohojhub_private.signal_conversation_change();
