@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import {
   ArrowRight, Bell, CalendarDays, ChevronDown, ChevronRight, FileText,
-  Flame, Grid2X2, Heart, MapPin, Megaphone, Radio, SlidersHorizontal, Tag,
+  Flame, Grid2X2, Heart, MapPin, Megaphone, Pause, Play, Radio, SlidersHorizontal, Tag,
 } from 'lucide-react';
 import BangladeshLiveClock from '@/components/BangladeshLiveClock';
 import DirectorySearch from '@/components/search/DirectorySearch';
@@ -35,6 +35,7 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
   const [category, setCategory] = useState('সব ক্যাটাগরি');
   const [district, setDistrict] = useState('সারা বাংলাদেশ');
   const [trending, setTrending] = useState(false);
+  const [tickerPaused, setTickerPaused] = useState(false);
   const featured = useMemo(() => featuredModuleSlugs.map((slug) => modules.find((item) => item.slug === slug)).filter((item) => item !== undefined), []);
   const visibleFeatured = featured.filter((item) => category === 'সব ক্যাটাগরি' || item.category === category);
   const orderedFeatured = trending ? visibleFeatured.slice(0, 5) : visibleFeatured;
@@ -61,20 +62,24 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
               {['সব ক্যাটাগরি', 'চাকরি', 'শিক্ষা', 'পণ্য', 'সেবা', 'ব্যবসা', 'টুলস'].map((item) => <button type="button" key={item} onClick={() => { setCategory(item); setFilterOpen(false); }}>{item}</button>)}
             </div>}
           </div>
-          <button type="button" className="filter-pill filter-pill-compact" onClick={() => { setFilterOpen(!filterOpen); setLocationOpen(false); }}><SlidersHorizontal size={18} className="gold-icon" /><span>ফিল্টার</span></button>
-          <button type="button" className={`filter-pill filter-pill-compact ${trending ? 'filter-active' : ''}`} aria-pressed={trending} onClick={() => setTrending(!trending)}><Flame size={17} className="gold-icon" /><span>ট্রেন্ডিং</span></button>
+          <Link href="/feed?filters=1" className="filter-pill filter-pill-compact"><SlidersHorizontal size={18} className="gold-icon" aria-hidden />ফিল্টার</Link>
         </div>
       </section>
 
       <div className="ticker" aria-label="সর্বশেষ আপডেট">
         <span className="ticker-live"><i /> লাইভ</span><span className="ticker-clock"><BangladeshLiveClock compact /></span>
-        <div className="ticker-window"><div className="ticker-track"><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span><b>•</b><span>বিশেষ অফার</span><b>•</b><span>শিক্ষা তথ্য</span><b>•</b><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span></div></div>
-        <button type="button" className="ticker-next" aria-label="পরের আপডেট" onClick={(event) => { const track = event.currentTarget.parentElement?.querySelector('.ticker-track'); track?.classList.toggle('ticker-paused'); }}><ChevronRight size={22} /></button>
+        <div className="ticker-window"><div className={`ticker-track${tickerPaused ? ' ticker-paused' : ''}`}><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span><b>•</b><span>বিশেষ অফার</span><b>•</b><span>শিক্ষা তথ্য</span><b>•</b><span>নতুন চাকরি বিজ্ঞপ্তি</span><b>•</b><span>ভর্তি আপডেট</span></div></div>
+        <button type="button" className="ticker-next" aria-label={tickerPaused ? 'টিকার চালু করুন' : 'টিকার থামান'}
+          onClick={() => setTickerPaused(paused => !paused)}>
+          {tickerPaused ? <Play size={18} /> : <Pause size={18} />}
+        </button>
       </div>
 
       <section className="hero-banner" aria-label="সহজ হাব BD পরিচিতি">
         <h1 className="sr-only">সহজ হাব BD</h1>
-        <div className="hero-landscape" aria-hidden="true"><span className="hero-sun" /><span className="hero-memorial"><i /><i /><i /></span><span className="hero-flag"><i /></span><span className="hero-horizon" /></div>
+        {slideIndex === 0
+          ? <div className="hero-reference-art" aria-hidden="true" />
+          : <div className="hero-landscape" aria-hidden="true"><span className="hero-sun" /><span className="hero-memorial"><i /><i /><i /></span><span className="hero-flag"><i /></span><span className="hero-horizon" /></div>}
         <div className="hero-copy">
           <p>{slide.first}</p><p>{slide.second}</p><strong>{slide.third}</strong>
           <div className="hero-checks">{slide.checks.map((item) => <span key={item}><b>✓</b>{item}</span>)}</div>
@@ -88,13 +93,17 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
 
       <section className="featured-section" aria-labelledby="featured-title">
         <div className="section-heading"><h2 id="featured-title"><Grid2X2 size={22} className="gold-icon" /> আমাদের প্রধান মডিউলসমূহ</h2><Link href="/modules">সব মডিউল দেখুন <ChevronRight size={20} /></Link></div>
+        <button type="button" className={`filter-pill featured-trending${trending ? ' filter-active' : ''}`}
+          aria-pressed={trending} onClick={() => setTrending(on => !on)}>
+          <Flame size={16} className="gold-icon" aria-hidden /> ট্রেন্ডিং
+        </button>
         <div className="featured-grid">
           {orderedFeatured.map((item) => {
             if (!item) return null;
-            const enabled = !item.enabledKey || enabledModuleKeys.includes(item.enabledKey);
+            const enabled = Boolean(item.enabledKey && enabledModuleKeys.includes(item.enabledKey));
             return <Link href={`/modules/${item.slug}`} key={item.slug} className={`module-card tone-${item.tone}`} aria-label={`${item.name}: ${item.title}${enabled ? '' : ', প্রস্তুত হচ্ছে'}`}>
               <span className="module-card-icon" aria-hidden>{item.icon}</span><strong>{item.name}</strong><span>{item.title}</span>
-              {item.enabledKey && !enabled && <small>প্রস্তুত হচ্ছে</small>}
+              {!enabled && <small>প্রস্তুত হচ্ছে</small>}
             </Link>;
           })}
         </div>

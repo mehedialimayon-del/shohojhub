@@ -76,7 +76,14 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
   await expect(page.locator('.brand-pin')).toHaveAttribute('src', /shohojhub-pin\.png/);
   await expect(page.locator('.brand-wordmark')).toHaveAttribute('src', /shohojhub-wordmark\.png/);
-  await expect(page.locator('.module-card')).toHaveCount(10);
+  await expect(page.locator('.module-card')).toHaveCount(8);
+  await expect(page.locator('.module-card strong')).toHaveText([
+    'ChaaiKini', 'HaatBazar', 'Porai', 'ExamArena BD',
+    'A&N Overseas', 'ChakriChai', 'ShebaChai', 'VaraChai',
+  ]);
+  await page.getByRole('button', { name: 'টিকার থামান' }).click();
+  await expect(page.locator('.ticker-track')).toHaveCSS('animation-play-state', 'paused');
+  await page.getByRole('button', { name: 'টিকার চালু করুন' }).click();
 
   await page.getByRole('button', { name: 'এলাকা বেছে নিন' }).click();
   await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
@@ -98,7 +105,10 @@ test('premium home interactions and the 40-module directory work', async ({ page
 });
 
 test('live feed and filter sheet match the supplied inner-page structure', async ({ page }) => {
-  await page.goto('/feed');
+  await page.goto('/');
+  await page.getByRole('link', { name: 'ফিল্টার', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'ফিল্টার করুন' })).toBeVisible();
+  await page.getByRole('button', { name: 'ফিল্টার বন্ধ করুন' }).click();
   await expect(page.getByRole('heading', { name: 'লাইভ ফিড' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'সব পোস্ট' })).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: 'বিস্তারিত ফিল্টার খুলুন' }).click();

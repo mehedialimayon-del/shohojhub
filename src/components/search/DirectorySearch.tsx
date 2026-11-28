@@ -28,15 +28,17 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
   const [offset, setOffset] = useState(0);
   const [result, setResult] = useState<SearchResult | null>(null);
   const [error, setError] = useState('');
+  const [voiceError, setVoiceError] = useState('');
   const [pending, setPending] = useState(false);
   const [retry, setRetry] = useState(0);
   const term = query.trim();
 
   function startVoiceSearch() {
+    setVoiceError('');
     const speech = window as Window & { SpeechRecognition?: VoiceRecognitionConstructor; webkitSpeechRecognition?: VoiceRecognitionConstructor };
     const Recognition = speech.SpeechRecognition ?? speech.webkitSpeechRecognition;
     if (!Recognition) {
-      setError('এই ব্রাউজারে ভয়েস সার্চ চালু নেই। লিখে খুঁজুন।');
+      setVoiceError('এই ব্রাউজারে ভয়েস সার্চ চালু নেই। লিখে খুঁজুন।');
       return;
     }
     const recognition = new Recognition();
@@ -50,8 +52,13 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
       setError('');
       setPending(value.trim().length >= 2);
     };
-    recognition.onerror = () => setError('ভয়েস সার্চ পাওয়া যায়নি। লিখে খুঁজুন।');
-    recognition.start();
+    const reportVoiceError = () => setVoiceError('ভয়েস সার্চ পাওয়া যায়নি। লিখে খুঁজুন।');
+    recognition.onerror = reportVoiceError;
+    try {
+      recognition.start();
+    } catch {
+      reportVoiceError();
+    }
   }
 
   useEffect(() => {
@@ -95,6 +102,7 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
           placeholder="আপনার প্রয়োজনীয় সেবা, পণ্য, চাকরি বা তথ্য খুঁজুন..." onChange={event => {
             const value = event.target.value;
             setQuery(value);
+            setVoiceError('');
             if (value.trim() === term && offset === 0) return;
             setOffset(0);
             setResult(null);
@@ -106,7 +114,7 @@ export default function DirectorySearch({ compact = false }: { compact?: boolean
       <div className="mt-3 text-sm text-neutral-300" role="status">
         {term.length === 1 && 'অন্তত ২টি অক্ষর লিখুন।'}
         {pending && 'খোঁজা হচ্ছে…'}
-        {error}
+        {error || voiceError}
         {!pending && !error && result?.results.length === 0 && 'কোনো ফল পাওয়া যায়নি।'}
       </div>
       {error && <button className="hub-button hub-button-outline mt-3" onClick={() => { setError(''); setPending(true); setRetry(value => value + 1); }}>আবার খুঁজুন</button>}

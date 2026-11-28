@@ -3,7 +3,14 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const read = p => readFileSync(new URL('../'+p,import.meta.url),'utf8');
 test('package declares required runtime dependencies',()=>{const p=JSON.parse(read('package.json'));for(const k of ['next','react','react-dom','@supabase/ssr','@supabase/supabase-js','server-only','lucide-react']) assert.ok(p.dependencies[k],k);});
-test('logo SVG namespace',()=>assert.match(read('src/components/brand/ShohojHubLogo.tsx'),/http:\/\/www\.w3\.org\/2000\/svg/));
+test('header uses the approved pin and separate wordmark', () => {
+  const header = read('src/components/home/AppChrome.tsx');
+  for (const file of ['shohojhub-pin.png', 'shohojhub-wordmark.png']) {
+    assert.ok(header.includes('/brand/' + file));
+    const png = readFileSync(new URL('../public/brand/' + file, import.meta.url));
+    assert.equal(png.subarray(1, 4).toString(), 'PNG');
+  }
+});
 test('loading status and spinner',()=>{const s=read('src/app/loading.tsx');assert.match(s,/role="status"/);assert.match(s,/animate-spin/);});
 test('error recovery wiring',()=>{const s=read('src/app/error.tsx');assert.match(s,/onClick=\{reset\}/);assert.match(s,/href="\/"/);});
 test('404 home navigation wiring',()=>assert.match(read('src/app/not-found.tsx'),/href="\/"/));
