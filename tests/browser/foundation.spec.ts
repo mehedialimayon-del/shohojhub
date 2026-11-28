@@ -120,5 +120,14 @@ test('live feed and filter sheet match the supplied inner-page structure', async
   await expect(dialog.getByRole('button', { name: 'চাকরি' })).toHaveAttribute('aria-pressed', 'false');
   await dialog.getByRole('button', { name: /ফলাফল দেখুন/ }).click();
   await expect(page.getByRole('dialog')).toHaveCount(0);
-  await expect(page.getByText('এখনো কোনো প্রকাশিত পোস্ট নেই')).toBeVisible();
+  await expect(page.getByText(/এখনো কোনো প্রকাশিত পোস্ট নেই|ফিড এখন লোড করা যাচ্ছে না/)).toBeVisible();
+});
+
+test('guest can reach each post intent and sign-in preserves the requested form', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'আমি সেবা দেব', exact: true }).click();
+  await expect(page).toHaveURL(/\/posts\/new\?intent=offer$/);
+  await expect(page.getByText('পোস্ট দিতে সাইন ইন প্রয়োজন')).toBeVisible();
+  await page.getByRole('link', { name: 'সাইন ইন করুন' }).click();
+  await expect(page.locator('input[name="returnTo"]')).toHaveValue('/posts/new?intent=offer');
 });

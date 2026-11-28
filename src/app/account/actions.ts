@@ -44,7 +44,9 @@ export async function submitAccount(form: FormData) {
   } catch {
     status = 'unavailable';
   }
-  redirect(status === 'signed_in' ? '/account' : '/account?status=' + status);
+  const requested = String(form.get('returnTo') ?? '');
+  const returnTo = /^\/posts\/new(?:\?intent=(need|offer))?$/.test(requested) ? requested : '/account';
+  redirect(status === 'signed_in' ? returnTo : '/account?status=' + status);
 }
 
 export async function signOut() {

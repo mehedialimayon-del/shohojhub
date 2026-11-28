@@ -9,5 +9,10 @@ export default async function HomePage() {
     ? await client.from('system_modules').select('module_key').eq('enabled', true)
     : { data: null };
   const enabledModuleKeys = result.data?.map((row) => row.module_key) ?? [];
-  return <HomeExperience enabledModuleKeys={enabledModuleKeys} />;
+  const posts = client
+    ? await client.from('posts').select('id,category,title,division,district,price_min_paisa,price_max_paisa,published_at')
+      .eq('status','published').lte('published_at',new Date().toISOString())
+      .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString()).order('published_at',{ascending:false}).limit(2)
+    : { data: null };
+  return <HomeExperience enabledModuleKeys={enabledModuleKeys} recentPosts={posts.data ?? []} />;
 }

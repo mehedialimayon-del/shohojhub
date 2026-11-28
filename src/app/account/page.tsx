@@ -13,10 +13,11 @@ const messages: Record<string, string> = {
   saved: 'প্রোফাইল সংরক্ষণ হয়েছে।',
   profile_error: 'প্রোফাইল সংরক্ষণ করা যায়নি।',
   password_saved: 'পাসওয়ার্ড বদলেছে। নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন।',
+  post_submitted: 'আপনার পোস্ট রিভিউয়ের জন্য জমা হয়েছে। অনুমোদিত হলে লাইভ ফিডে দেখা যাবে।',
 };
 
-export default async function AccountPage({ searchParams }: { searchParams: Promise<{ status?: string; mode?: string }> }) {
-  const { status, mode } = await searchParams;
+export default async function AccountPage({ searchParams }: { searchParams: Promise<{ status?: string; mode?: string; returnTo?: string }> }) {
+  const { status, mode, returnTo } = await searchParams;
   const notice = typeof status === 'string' && Object.hasOwn(messages, status) ? messages[status] : '';
   const client = await createClient().catch(() => null);
   const auth = client ? await client.auth.getUser() : null;
@@ -42,11 +43,13 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
           </form>
         ) : <p>{profile?.suspended_at ? 'এই অ্যাকাউন্ট স্থগিত আছে।' : 'প্রোফাইল এখন খোলা যাচ্ছে না।'}</p>}
         {profile?.role === "merchant" && !profile.suspended_at && <Link href="/business" className="hub-button hub-button-outline mt-4">স্টক ও ক্যাশ মেমো</Link>}
+        <Link href="/posts/manage" className="hub-button hub-button-outline mt-4">আমার পোস্ট</Link>
         <form action={signOut} className="mt-4"><button className="hub-button hub-button-outline">সাইন আউট</button></form>
       </> : <>
         {!client && !notice && <p className="mb-4" role="status">{messages.unavailable}</p>}
         <form action={submitAccount} className="hub-card grid gap-4">
           <input type="hidden" name="intent" value={formMode} />
+          <input type="hidden" name="returnTo" value={typeof returnTo === 'string' && /^\/posts\/new(?:\?intent=(need|offer))?$/.test(returnTo) ? returnTo : '/account'} />
           <label htmlFor="email">ইমেইল</label>
           <input className="hub-input" name="email" id="email" type="email" autoComplete="email" required maxLength={254} />
           {(formMode === 'register' || formMode === 'login') && <>

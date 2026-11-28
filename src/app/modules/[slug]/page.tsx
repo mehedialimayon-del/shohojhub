@@ -35,6 +35,10 @@ export default async function ModulePage({ params }: { params: Promise<{ slug: s
         {enabled && hubModule.enabledKey === 'storefront' && <Link href="/#search" className="hub-button"><Search size={18} /> দোকান ও পণ্য খুঁজুন</Link>}
         {enabled && hubModule.enabledKey === 'cash_memos' && <Link href="/account" className="hub-button">অ্যাকাউন্টে যান <ArrowRight size={17} /></Link>}
         {enabled && (hubModule.enabledKey === 'porai' || hubModule.enabledKey === 'messaging') && <Link href="/account" className="hub-button">অ্যাকাউন্টে যান <ArrowRight size={17} /></Link>}
+        {slug === 'amar-chahida' && <>
+          <Link href="/feed?intent=need" className="hub-button">প্রয়োজনের পোস্ট দেখুন</Link>
+          <Link href="/posts/new?intent=need" className="hub-button hub-button-outline">আমার প্রয়োজন পোস্ট করুন</Link>
+        </>}
         <Link href="/modules" className="hub-button hub-button-outline">অন্য মডিউল দেখুন</Link>
       </div>
     </section>
