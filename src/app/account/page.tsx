@@ -13,10 +13,11 @@ const messages: Record<string, string> = {
   saved: 'প্রোফাইল সংরক্ষণ হয়েছে।',
   profile_error: 'প্রোফাইল সংরক্ষণ করা যায়নি।',
   password_saved: 'পাসওয়ার্ড বদলেছে। নতুন পাসওয়ার্ড দিয়ে সাইন ইন করুন।',
+  post_submitted: 'আপনার পোস্ট রিভিউয়ের জন্য জমা হয়েছে। অনুমোদিত হলে লাইভ ফিডে দেখা যাবে।',
 };
 
-export default async function AccountPage({ searchParams }: { searchParams: Promise<{ status?: string; mode?: string }> }) {
-  const { status, mode } = await searchParams;
+export default async function AccountPage({ searchParams }: { searchParams: Promise<{ status?: string; mode?: string; returnTo?: string }> }) {
+  const { status, mode, returnTo } = await searchParams;
   const notice = typeof status === 'string' && Object.hasOwn(messages, status) ? messages[status] : '';
   const client = await createClient().catch(() => null);
   const auth = client ? await client.auth.getUser() : null;
@@ -46,6 +47,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
         {!client && !notice && <p className="mb-4" role="status">{messages.unavailable}</p>}
         <form action={submitAccount} className="hub-card grid gap-4">
           <input type="hidden" name="intent" value={formMode} />
+          <input type="hidden" name="returnTo" value={returnTo === '/posts/new' ? '/posts/new' : '/account'} />
           <label htmlFor="email">ইমেইল</label>
           <input className="hub-input" name="email" id="email" type="email" autoComplete="email" required maxLength={254} />
           {(formMode === 'register' || formMode === 'login') && <>

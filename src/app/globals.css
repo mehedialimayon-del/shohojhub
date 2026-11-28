@@ -145,6 +145,14 @@ a { color: inherit; text-decoration: none; }
 .feed-empty strong { font-size: .9rem; }
 .feed-empty p { margin: .15rem 0 0; color: #bbb; font-size: .75rem; }
 .feed-empty > a { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border-radius: 50%; background: linear-gradient(130deg,#ffbd19,#ff5b00); color: white; }
+.home-feed-posts { display: grid; gap: .4rem; }
+.home-feed-post { display: flex; align-items: center; gap: .58rem; padding: .55rem .62rem; border: 1px solid #62594f; border-radius: 14px; background: linear-gradient(120deg,#171513,#090a0b 72%,#201409); }
+.home-feed-post-icon { width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid #d58b20; border-radius: 11px; background: #2e1b08; color: #ffbd23; }
+.home-feed-post > span:nth-child(2) { min-width: 0; flex: 1; display: grid; }
+.home-feed-post b { color: #ffb323; font-size: .68rem; }
+.home-feed-post strong { overflow: hidden; font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+.home-feed-post small { color: #c8c4bd; font-size: .67rem; }
+.home-feed-post > svg { color: #ffb323; }
 .home-bottom-space { height: 1.4rem; }
 .feed-page { position: relative; min-height: calc(100vh - 160px); padding-top: .75rem; }
 .feed-search-stack { position: relative; z-index: 5; }
@@ -171,6 +179,39 @@ a { color: inherit; text-decoration: none; }
 .feed-empty-page { min-height: 128px; align-items: center; }
 .feed-empty-page > div { flex: 1; }
 .feed-empty-page .hub-button { min-height: 38px; flex: 0 0 auto; padding: .4rem .62rem; font-size: .72rem; }
+.feed-create-row { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin: -.2rem 0 .65rem; color: #c9c3ba; font-size: .76rem; }
+.feed-create-row p { margin: 0; }
+.feed-create-row .hub-button { min-height: 36px; padding: .35rem .7rem; font-size: .75rem; white-space: nowrap; }
+.feed-post-list { display: grid; gap: .55rem; }
+.feed-post-card { display: flex; gap: .7rem; padding: .7rem; border: 1px solid #62594f; border-radius: 16px; background: linear-gradient(130deg,#17191a,#090a0b 74%,#1b1108); box-shadow: inset 0 0 14px #ffffff05; }
+.feed-post-icon { width: 46px; height: 46px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid #d88a19; border-radius: 13px; background: linear-gradient(145deg,#382309,#15100b); color: #ffb326; }
+.feed-post-content { min-width: 0; flex: 1; }
+.feed-post-meta { display: flex; align-items: center; gap: .32rem; color: #c7beb1; font-size: .7rem; }
+.feed-post-meta b { color: #ffb323; }
+.feed-post-content h2 { margin: .12rem 0 .2rem; font-size: .98rem; line-height: 1.3; }
+.feed-post-content > p { display: -webkit-box; overflow: hidden; margin: 0 0 .42rem; color: #e1ddd8; font-size: .79rem; line-height: 1.48; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.feed-post-details { display: flex; flex-wrap: wrap; gap: .25rem .7rem; color: #c8c4bd; font-size: .7rem; }
+.feed-post-details span { display: inline-flex; align-items: center; gap: .2rem; }
+.feed-post-details svg { color: #ffad1c; }
+.feed-post-price { display: block; margin-top: .28rem; color: #ffbc22; font-size: .87rem; }
+.feed-post-contact { margin-top: .25rem; color: #ddd4c9; font-size: .72rem; }
+.post-compose-page { max-width: 48rem; }
+.post-back { min-height: 38px; padding: .4rem .68rem; font-size: .77rem; }
+.post-compose-page .page-title-row { justify-content: flex-start; margin-top: 1rem; }
+.post-compose-page .page-title-row h1 { display: flex; align-items: center; gap: .55rem; font-size: clamp(1.55rem,5vw,2.3rem); }
+.post-compose-page .page-title-row h1 svg { color: #ffae1b; }
+.post-compose-page .page-title-row p { color: #d2ccc4; }
+.post-form { display: grid; gap: .8rem; max-width: none; }
+.post-form label { display: grid; gap: .35rem; color: #f4eee6; font-size: .84rem; font-weight: 700; }
+.post-form input, .post-form select, .post-form textarea, .feed-location-selects input { width: 100%; min-height: 44px; padding: .6rem .72rem; border: 1px solid #655344; border-radius: 11px; background: #0b0b0b; color: #fff; }
+.post-form textarea { resize: vertical; min-height: 125px; }
+.post-form select { color-scheme: dark; }
+.post-form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+.post-review-note { margin: 0; padding: .65rem; border: 1px solid #80501f; border-radius: 10px; background: #201407; color: #f6d59b; font-size: .76rem; line-height: 1.5; }
+.post-notice, .post-login-prompt { margin: .6rem 0; color: #ffe0a4; }
+.post-login-prompt { display: grid; gap: .55rem; }
+.post-login-prompt p { margin: 0; color: #d3cdc4; font-size: .84rem; }
+.post-login-prompt .hub-button { width: fit-content; }
 .feed-floating-filter { position: fixed; z-index: 29; right: max(calc((100vw - 76rem)/2 + 1rem), 1rem); bottom: 96px; width: 54px; height: 54px; display: grid; place-items: center; border: 1.5px solid #ffe06f; border-radius: 50%; background: linear-gradient(145deg,#ffae08,#ff4b00); color: white; box-shadow: 0 0 14px #ff8c13a8; }
 .feed-filter-scrim { position: fixed; z-index: 65; inset: 0; display: flex; justify-content: center; align-items: center; padding: .7rem; background: #000b; backdrop-filter: blur(5px); }
 .feed-filter-sheet { width: min(100%, 620px); max-height: min(92dvh, 900px); overflow-y: auto; padding: 1rem; border: 1px solid #81786c; border-radius: 22px; background: linear-gradient(145deg,#121416,#090a0b 62%,#16120e); box-shadow: 0 20px 70px #000d,0 0 22px #ff980022; }
@@ -185,6 +226,7 @@ a { color: inherit; text-decoration: none; }
 .feed-location-selects { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .35rem; }
 .feed-location-selects label { position: relative; min-width: 0; }
 .feed-location-selects select { width: 100%; min-height: 42px; appearance: none; padding: .4rem 1.5rem .4rem .52rem; border: 1px solid #655e56; border-radius: 11px; background: linear-gradient(150deg,#232629,#111); color: white; font-size: clamp(.62rem,2.4vw,.82rem); }
+.feed-location-selects input { min-height: 42px; padding: .4rem .52rem; font-size: clamp(.62rem,2.4vw,.82rem); }
 .feed-location-selects label > svg { position: absolute; right: .45rem; top: 50%; transform: translateY(-50%); color: #e2ddd7; pointer-events: none; }
 .feed-category-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .38rem; }
 .feed-category-grid button { position: relative; min-height: 66px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .2rem; padding: .35rem .1rem; border: 1px solid #4d5050; border-radius: 13px; background: linear-gradient(150deg,#242628,#111); color: #f5f3ef; font-size: clamp(.59rem,2.2vw,.77rem); }

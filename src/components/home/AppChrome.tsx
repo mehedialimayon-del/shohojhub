@@ -58,7 +58,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
         <Link href="/" className="dock-item"><Home size={23} /><span>হোম</span></Link>
         <Link href="/modules" className="dock-item"><Grid2X2 size={23} /><span>মডিউল</span></Link>
         <Link href="/#search" className="dock-search" aria-label="খুঁজুন"><Search size={31} /><span>খুঁজুন</span></Link>
-        <Link href="/account?intent=create" className="dock-item"><PenSquare size={23} /><span>পোস্ট করুন</span></Link>
+        <Link href="/posts/new" className="dock-item"><PenSquare size={23} /><span>পোস্ট করুন</span></Link>
         <Link href="/account" className="dock-item"><UserRound size={23} /><span>আমার</span></Link>
       </nav>
       {notice && <div className="hub-toast" role="status">{notice}</div>}

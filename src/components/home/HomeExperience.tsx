@@ -28,7 +28,8 @@ const slides = [
   { first: 'সহজ হাব BD', second: 'আপনার পাশে', third: 'প্রতিদিন!', checks: ['স্থানীয়', 'নিরাপদ', 'সহজ', 'বাংলাদেশ'] },
 ];
 
-export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKeys: string[] }) {
+type RecentPost = { id: string; category: string; title: string; division: string; district: string; price_min_paisa: number | null; price_max_paisa: number | null; published_at: string | null };
+export default function HomeExperience({ enabledModuleKeys, recentPosts }: { enabledModuleKeys: string[]; recentPosts: RecentPost[] }) {
   const [slideIndex, setSlideIndex] = useState(0);
   const [filterOpen, setFilterOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -105,11 +106,11 @@ export default function HomeExperience({ enabledModuleKeys }: { enabledModuleKey
         <div className="feed-filters" id="feed-filters" role="group" aria-label="ফিডের ধরন বেছে নিন">
           {feedFilters.map((item) => <Link key={item} href={item === 'সব পোস্ট' ? '/feed' : `/feed?category=${encodeURIComponent(item)}`} className={item === 'সব পোস্ট' ? 'active' : ''}>{item}</Link>)}
         </div>
-        <div className="feed-empty">
+        {recentPosts.length ? <div className="home-feed-posts">{recentPosts.map((post) => <Link key={post.id} href="/feed" className="home-feed-post"><span className="home-feed-post-icon"><Bell size={18} /></span><span><b>{post.category === 'jobs' ? 'চাকরিচাই' : post.category === 'products' ? 'পণ্য' : post.category === 'tuition' ? 'পড়াই' : 'সহজ হাব'}</b><strong>{post.title}</strong><small>{post.district}, {post.division}{post.price_min_paisa !== null ? ` · ৳ ${new Intl.NumberFormat('bn-BD').format(post.price_min_paisa / 100)}` : ''}</small></span><ArrowRight size={18} /></Link>)}</div> : <div className="feed-empty">
           <span className="feed-empty-icon"><Bell size={21} /></span>
           <div><strong>এখনো কোনো নতুন পোস্ট নেই</strong><p>প্রকাশিত ও যাচাইকৃত পোস্ট এলে এখানে দেখাবে।</p></div>
           <Link href="/feed" aria-label="লাইভ ফিড খুলুন"><ArrowRight size={19} /></Link>
-        </div>
+        </div>}
       </section>
 
       <div className="home-bottom-space" aria-hidden="true" />
