@@ -91,6 +91,14 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await expect(cards.filter({ hasText: 'চায়াকিনি' })).toHaveAttribute('href', '/modules/chaikini');
   await expect(cards.filter({ hasText: 'চাকরিচাই' })).toHaveAttribute('href', '/jobs');
   await expect(cards.filter({ hasText: 'পড়াই' })).toHaveAttribute('href', '/tuition');
+  await expect(page.locator('.home-promo-card')).toHaveCount(0);
+  const homePostCount = await page.locator('.home-feed-post').count();
+  if (homePostCount === 0) await expect(page.locator('.live-feed .feed-empty')).toBeVisible();
+  await page.getByRole('button', { name: 'আরও তথ্য' }).click();
+  await expect(page.getByRole('dialog', { name: 'কেন ব্যবহার করবেন সহজ হাব BD?' })).toBeVisible();
+  await expect(page.locator('.benefit-grid article')).toHaveCount(5);
+  await page.getByRole('button', { name: 'বন্ধ করুন' }).last().click();
+  await expect(page.getByRole('dialog', { name: 'কেন ব্যবহার করবেন সহজ হাব BD?' })).toHaveCount(0);
   expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
   const frame = page.locator('.reference-home-shell');
   const size = await frame.boundingBox();
@@ -107,7 +115,8 @@ test('premium home interactions and the 40-module directory work', async ({ page
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
     await page.getByRole('button', { name: 'আগের ব্যানার' }).click();
-    await expect(page.getByRole('link', { name: 'অফার দেখুন', exact: true })).toHaveAttribute('href', '/feed?category=deals');
+    await expect(page.locator('.hero-banner')).toHaveAttribute('data-banner', '2');
+    await expect(page.getByRole('img', { name: /Google Play থেকে ডাউনলোড করুন/ })).toBeVisible();
     await page.getByRole('button', { name: 'পরের ব্যানার' }).click();
     await expect(page.getByRole('button', { name: 'স্লাইড 1' })).toHaveAttribute('aria-pressed', 'true');
   }
@@ -121,8 +130,11 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await page.getByRole('button', { name: 'ঢাকা', exact: true }).click();
   await expect(page.getByRole('button', { name: 'এলাকা বেছে নিন' })).toContainText('ঢাকা');
 
-  await page.getByRole('button', { name: 'স্লাইড 3' }).click();
-  await expect(page.locator('.hero-copy')).toContainText('সর্বশেষ অফার');
+  await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'স্লাইড 2' }).click();
+  await expect(page.locator('.hero-banner')).toHaveAttribute('data-banner', '2');
+  await page.locator('.hero-banner-hotspot').click();
+  await expect(page.getByRole('status')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
   if (!desktop) {
     await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
     await expect(cards).toHaveCount(5);
@@ -142,13 +154,14 @@ test('the reference carousel rotates and can be paused', async ({ page }) => {
   await page.goto('/');
   const banner = page.locator('.hero-banner');
   await expect(banner).toHaveAttribute('data-banner', '1');
-  await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'স্লাইড 2' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'স্লাইড 4' })).toHaveCount(0);
   await expect(banner).toHaveAttribute('data-banner', '2', { timeout: 4000 });
-  await expect(banner).toContainText('Google Play');
+  await expect(banner.getByRole('img', { name: /Google Play থেকে ডাউনলোড করুন/ })).toBeVisible();
   await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
-  await page.getByRole('button', { name: 'স্লাইড 3' }).click();
-  await expect(banner.getByRole('link', { name: 'অফার দেখুন' })).toHaveAttribute('href', '/feed?category=deals');
+  await page.getByRole('button', { name: 'স্লাইড 1' }).click();
+  await expect(banner).toHaveAttribute('data-banner', '1');
   await expect(page.getByRole('button', { name: 'ব্যানার চালু করুন' })).toBeVisible();
 });
 

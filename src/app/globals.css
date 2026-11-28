@@ -47,6 +47,21 @@ a { color: inherit; text-decoration: none; }
 .drawer > a { padding: .9rem .75rem; border: 1px solid #4b3924; border-radius: .8rem; background: #17120c; }
 .drawer > a:hover { border-color: var(--sh-gold); background: #271908; }
 .icon-only { background: none; border: 0; padding: .25rem; color: inherit; display: inline-flex; }
+.home-more-button { display: none; cursor: pointer; }
+.benefit-scrim { position: fixed; inset: 0; z-index: 75; display: grid; place-items: center; padding: .75rem; background: #000c; backdrop-filter: blur(6px); }
+.benefit-dialog { width: min(100%, 560px); max-height: min(90dvh, 720px); overflow: auto; padding: 1rem; border: 1px solid #ffad24; border-radius: 20px; background: radial-gradient(ellipse at 5% 0%,#4a210b 0,#17100b 44%,#080808 82%); box-shadow: 0 0 18px #ff7f22aa, 0 20px 65px #000e; }
+.benefit-dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: .8rem; padding-bottom: .7rem; border-bottom: 1px solid #694016; }
+.benefit-dialog-heading > span { display: grid; gap: .15rem; }
+.benefit-dialog-heading strong { color: #ffd04c; font-size: 1.12rem; }
+.benefit-dialog-heading small { color: #dfd4c7; font-size: .78rem; }
+.benefit-dialog-heading button { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #9b6224; border-radius: 50%; background: #160d07; cursor: pointer; }
+.benefit-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .4rem; padding: .75rem 0; }
+.benefit-grid article { display: flex; align-items: center; gap: .5rem; min-width: 0; padding: .55rem .48rem; border: 1px solid #72501f; border-radius: 13px; background: linear-gradient(130deg,#27170b,#0a0908); box-shadow: inset 0 0 12px #ff95141b; }
+.benefit-grid article > svg { width: 28px; height: 28px; flex: 0 0 auto; padding: .28rem; border: 1px solid #ffb72b; border-radius: 50%; color: #ffd43c; filter: drop-shadow(0 0 5px #ff8c12); }
+.benefit-grid article span { display: grid; min-width: 0; gap: .08rem; }
+.benefit-grid article strong { color: white; font-size: .82rem; line-height: 1.2; }
+.benefit-grid article small { color: #d2c6b9; font-size: .67rem; line-height: 1.25; }
+.benefit-dialog > .hub-button { display: flex; justify-content: center; width: 100%; margin-top: .1rem; }
 .hub-toast { position: fixed; z-index: 80; left: 50%; bottom: 110px; transform: translateX(-50%); width: max-content; max-width: min(90vw, 36rem); padding: .75rem 1rem; border: 1px solid #ffb326; border-radius: 999px; background: #17100b; box-shadow: 0 8px 26px #000c, 0 0 15px #ff8c2233; color: #fff; text-align: center; }
 
 .home-content { width: min(100% - 1rem, 63rem); padding-top: .5rem; }
@@ -97,6 +112,16 @@ a { color: inherit; text-decoration: none; }
   background: url('/brand/home-design-reference.webp') 21.33% 29.79% / 717.76% 781.68% no-repeat;
   mask-image: linear-gradient(90deg, transparent, #000 20%);
 }
+.hero-download-art { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
+.hero-banner.is-download-slide { background: #070605; }
+.hero-banner.is-download-slide::before { display: none; }
+.hero-banner.is-download-slide .hero-copy { display: none; }
+.hero-banner.is-download-slide .hero-cta { display: none; }
+.hero-banner.is-download-slide .hero-banner-hotspot { z-index: 1; }
+.hero-banner.is-download-slide .hero-dots, .hero-banner.is-download-slide .hero-pause,
+.hero-banner.is-download-slide .hero-arrow { z-index: 3; }
+.download-notice { position: fixed; z-index: 80; left: 50%; bottom: calc(78px + env(safe-area-inset-bottom)); transform: translateX(-50%); width: max-content; max-width: min(92vw, 34rem); display: flex; align-items: center; gap: .7rem; padding: .65rem .85rem; border: 1px solid #ffb52c; border-radius: 999px; background: #170e07; color: #fff; box-shadow: 0 0 14px #ff781b88,0 8px 24px #000b; font-size: .78rem; cursor: pointer; }
+.download-notice span { color: #ffc640; font-size: 1.2rem; }
 .hero-landscape { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: radial-gradient(ellipse at 82% 27%,#ffe5a1 0 4%,#ff9f53 14%,#dc3a31 34%,transparent 58%), linear-gradient(145deg,#562600,#ef5b2c 48%,#f8b55a 70%,#102c21); }
 .hero-sun { position: absolute; right: 29%; top: 15%; width: clamp(46px,12vw,100px); height: clamp(46px,12vw,100px); border-radius: 50%; background: radial-gradient(circle,#fff9cc,#ffd581 47%,#ffc35d99 70%,transparent 72%); filter: blur(1px); }
 .hero-horizon { position: absolute; left: 35%; right: -2%; bottom: 0; height: 29%; background: linear-gradient(180deg,#30502a,#122118 82%); clip-path: polygon(0 58%,8% 50%,12% 63%,20% 45%,28% 60%,36% 37%,43% 60%,53% 35%,62% 57%,73% 45%,80% 59%,88% 33%,100% 51%,100% 100%,0 100%); }
@@ -451,6 +476,7 @@ a { color: inherit; text-decoration: none; }
   .desktop-main-nav svg { width: 21px; height: 21px; }
   .desktop-main-nav a[aria-current="page"], .desktop-main-nav a:hover { border-color: #ff9a14; color: #fff; background: radial-gradient(ellipse at 42% 85%,#b24a03,#160c02 75%); box-shadow: inset 0 0 8px #ff8b19a0; }
   .desktop-search-shortcut { display: inline-grid; }
+  .home-more-button { display: inline-grid; }
   .desktop-sidebar { display: block; position: fixed; z-index: 25; inset: var(--desktop-header) auto 0 0; width: var(--desktop-sidebar); overflow-y: auto;
     padding: .9rem .65rem 1.2rem; border-right: 1px solid #985100; background: linear-gradient(160deg,#130c06,#090909 28%); }
   .desktop-sidebar a { display: flex; align-items: center; gap: .65rem; min-height: 40px; padding: .42rem .6rem; border-bottom: 1px solid #30251e; font-size: .88rem; }
@@ -512,6 +538,16 @@ a { color: inherit; text-decoration: none; }
   .bottom-dock { left: calc(50% + var(--desktop-sidebar) / 2); }
   .app-header:has(.feed-app-header) ~ .bottom-dock { left: 50%; }
   .feed-page { width: min(100% - 1.5rem, 86rem); }
+}
+
+@media (max-width: 1099px) {
+  .home-more-button { display: inline-grid; width: 33px; height: 33px; }
+  .home-more-button svg { width: 19px; height: 19px; }
+}
+@media (max-width: 360px) {
+  .app-header-inner { gap: .28rem; }
+  .header-actions { gap: .25rem; }
+  .home-more-button { width: 30px; height: 30px; }
 }
 @media print {
   .desktop-sidebar { display: none; }

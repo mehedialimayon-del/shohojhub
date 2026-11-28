@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
-import { ArrowLeft, Bell, BookOpen, BriefcaseBusiness, GraduationCap, Grid2X2, Handshake, Heart, Home, MapPin, Menu, MessageCircle, PenSquare, Play, Radio, Search, Settings, Smartphone, Tag, UserRound, Wallet, Wrench, X } from 'lucide-react';
+import { ArrowLeft, Bell, BookOpen, BriefcaseBusiness, GraduationCap, Grid2X2, Handshake, Heart, Home, MapPin, Menu, MessageCircle, MoreHorizontal, PenSquare, Play, Radio, Search, Settings, ShieldCheck, Smartphone, Tag, UserRound, UsersRound, Wallet, Wrench, Zap, RefreshCw, X } from 'lucide-react';
 
 const desktopNav = [
   ['হোম', '/', Home], ['ক্যাটাগরি', '/modules', Grid2X2], ['সেবা', '/feed?category=services', Handshake],
@@ -26,6 +26,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
   const isHome = pathname === '/';
   const fixedListings = ['/jobs','/tuition','/nearby'].includes(pathname);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [benefitsOpen, setBenefitsOpen] = useState(false);
 
   return (
     <div className={`hub-app${isHome ? ' hub-home-app reference-home-shell' : (isFeed || fixedListings) ? ' fixed-listing-shell' : ''}`} onPointerDownCapture={event => {
@@ -58,6 +59,7 @@ export default function AppChrome({ children }: { children: ReactNode }) {
             <Link href="/#search" className="round-tool desktop-search-shortcut" aria-label="সার্চে যান"><Search size={20} /></Link>
             <Link className="round-tool notice-button" href="/notifications" aria-label="নোটিফিকেশন"><Bell size={20} /></Link>
             <Link href="/account" className="round-tool" aria-label="অ্যাকাউন্ট"><UserRound size={20} /></Link>
+            {isHome && <button className="round-tool home-more-button" type="button" aria-label="আরও তথ্য" aria-expanded={benefitsOpen} onClick={() => setBenefitsOpen(true)}><MoreHorizontal size={21} /></button>}
           </div>
         </div>}
       </header>
@@ -87,6 +89,20 @@ export default function AppChrome({ children }: { children: ReactNode }) {
           <Link href="/nearby" onClick={() => setMenuOpen(false)}>কাছাকাছি</Link>
           <Link href="/connect" onClick={() => setMenuOpen(false)}>Shohoj Connect</Link>
         </nav>
+      </div>}
+
+      {benefitsOpen && <div className="benefit-scrim" onClick={() => setBenefitsOpen(false)}>
+        <section className="benefit-dialog" role="dialog" aria-modal="true" aria-labelledby="benefit-title" onClick={(event) => event.stopPropagation()}>
+          <div className="benefit-dialog-heading"><span><strong id="benefit-title">কেন ব্যবহার করবেন সহজ হাব BD?</strong><small>বাংলাদেশের প্রয়োজনীয় সেবা এক জায়গায়</small></span><button type="button" className="icon-only" onClick={() => setBenefitsOpen(false)} aria-label="বন্ধ করুন"><X /></button></div>
+          <div className="benefit-grid">
+            <article><ShieldCheck /><span><strong>বিশ্বস্ত ও নিরাপদ</strong><small>যাচাইকৃত প্ল্যাটফর্ম</small></span></article>
+            <article><Zap /><span><strong>দ্রুত ও সহজ</strong><small>সেবা খুঁজুন এক জায়গায়</small></span></article>
+            <article><UsersRound /><span><strong>নির্ভরযোগ্য সেবাদাতা</strong><small>স্থানীয় মানুষের সঙ্গে যুক্ত হন</small></span></article>
+            <article><RefreshCw /><span><strong>২৪/৭ সহায়তা</strong><small>যেকোনো সময় সাহায্য</small></span></article>
+            <article><Smartphone /><span><strong>মোবাইল ও ডেস্কটপ</strong><small>দুই ডিভাইসেই ব্যবহার করুন</small></span></article>
+          </div>
+          <Link href="/modules" className="hub-button" onClick={() => setBenefitsOpen(false)}>সব সেবা দেখুন</Link>
+        </section>
       </div>}
 
       <div className={isFeed || fixedListings ? 'app-main' : 'app-main has-desktop-sidebar'} id="main-content">{children}</div>

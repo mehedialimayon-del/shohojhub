@@ -6,8 +6,8 @@ Updated: 2026-11-28 (Asia/Kuala_Lumpur)
 
 | Chapter | Status | Verified scope / outstanding acceptance |
 | --- | --- | --- |
-| 01 — Home and navigation | Implemented; visual acceptance pending | Native React home, approved separate pin and wordmark assets, responsive fixed-screen shell, independently scrolling feed, directory links and search/filter controls. Screenshot comparison on Samsung A07/S23 Ultra is still required. |
-| 02 — Posts and feed | Partial | Authenticated post flow, review/scheduling/media and public-feed foundation already exist. This change adds optional, consent-based public map pins, validates Bangladesh coordinate bounds, and filters/paginates Nearby results. Real account flows for edit/close/reports/moderation and every feed filter still need browser acceptance. |
+| 01 — Home and navigation | Implemented; visual acceptance pending | Native React home, approved separate pin and wordmark assets, responsive fixed-screen shell, independently scrolling live feed, directory links and search/filter controls. Google Play artwork rotates into the second banner; the overflow button opens the benefit card. Screenshot comparison on Samsung A07/S23 Ultra is still required. |
+| 02 — Posts and feed | Partial | Authenticated post flow, review/scheduling/media and public-feed foundation already exist. The home preview and full feed show published, unexpired posts newest first across the shared posts table; the home preview scrolls independently and “আরও দেখুন” opens the paginated full-screen feed. The home does not invent posts when the database is empty. Optional consent-based map pins, Bangladesh coordinate bounds, and Nearby filters/pagination are also in place. Real account flows for edit/close/reports/moderation, module-specific posting workflows, and every feed filter still need acceptance. |
 | 03 — Dashboard and Connect | Partial | Dashboard, district consent, Nearby, messaging, blocking, notification and push foundations exist. Two-account delivery, private-location and push acceptance remain outstanding. |
 | 04 — Credits and advertising | Pending | No approved payment provider, Founder price schedule, refunds or advertising controls are implemented. |
 | 05 — Commerce and business tools | Partial | Inventory/cash memo data layer and business route exist; buyer-to-merchant, PDF/print, Excel, storefront and reconciliation acceptance remain outstanding. |
@@ -22,10 +22,10 @@ The 40 module cards remain a catalogue. A catalogue entry is not counted as a co
 ## This integration
 
 - Merged the fixed-screen React pages and map-pin work with the newer home design and explicit mobile module links.
-- Added coverage for fixed viewport bounds, independent feed scrolling, home card counts, and the dedicated Jobs/Tuition destinations.
+- Added coverage for fixed viewport bounds, independent feed scrolling, latest-first active post queries, the two configured carousel slides plus data-driven offer slide, overflow benefit card, and the dedicated Jobs/Tuition destinations.
 - Supabase project `shohojhub-test` (`zziayimtyjbwldpghrzc`) was inspected before the database check. Migration `20261128072604_public_post_map_pins` was already present; it was not applied a second time.
 - Ran the public map-pin policy/constraint check against the test project inside a rolled-back transaction. Draft coordinates stayed private, approved public coordinates were visible, and partial pins were rejected.
-- `npm run typecheck`, `npm run lint`, `npm test` (12/12), `npm run build`, and `git diff --check` pass.
+- `npm run typecheck`, `npm run lint`, `npm test` (13/13), `npm run build`, and `git diff --check` pass.
 - Local browser acceptance is blocked because Playwright Chromium is absent and its download endpoint returns HTTP 403. GitHub Actions run #82 passed the responsive browser suite (27 passed, 6 skipped) and the isolated-Supabase signed-in tests. This verifies the exercised layouts and flows, but is not pixel-level acceptance on the user's Samsung devices.
 
 ## Still required
