@@ -129,7 +129,6 @@ test('module directory links open working module destinations', async ({ page })
 test('the reference carousel rotates and can be paused', async ({ page }) => {
   await page.goto('/');
   const banner = page.locator('.hero-banner');
-  const desktop = (page.viewportSize()?.width ?? 0) >= 1100;
   await expect(banner).toHaveAttribute('data-banner', '1');
   await expect(page.getByRole('button', { name: 'স্লাইড 2' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'স্লাইড 3' })).toHaveCount(0);
@@ -142,7 +141,7 @@ test('the reference carousel rotates and can be paused', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'ব্যানার চালু করুন' })).toBeVisible();
   await page.getByRole('button', { name: 'স্লাইড 2' }).click();
   await expect(banner).toHaveAttribute('data-banner', '2');
-  await page.locator(desktop ? '.hero-cta' : '.hero-banner-hotspot').click();
+  await page.locator('.hero-banner-hotspot').click();
   await expect(page.locator('.download-notice')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
 });
 
