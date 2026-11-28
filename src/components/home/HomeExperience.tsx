@@ -31,14 +31,14 @@ const featuredIcons = {
 };
 const desktopFeatured = ['shohojtools', 'ai-assistant', 'referral-rewards', 'kajchai'];
 const mobileFeatured = [
-  { slug: 'chaikini', name: 'চায়াকিনি', title: 'অনলাইন কেনাকাটা', category: 'পণ্য', tone: 'green', href: '/modules/chaikini', enabledKey: 'storefront', iconComponent: ShoppingCart },
-  { slug: 'haatbazar', name: 'হাটবাজার', title: 'নতুন-পুরাতন পণ্য', category: 'পণ্য', tone: 'orange', href: '/modules/haatbazar', iconComponent: Store },
-  { slug: 'porai', name: 'পড়াই', title: 'টিউশন ও শিক্ষক', category: 'শিক্ষা', tone: 'blue', href: '/modules/porai', enabledKey: 'porai', iconComponent: GraduationCap },
-  { slug: 'examarena-bd', name: 'ExamArena BD', title: 'পরীক্ষা প্রস্তুতি ও ক্যারিয়ার', category: 'শিক্ষা', tone: 'purple', href: '/modules/examarena-bd', iconComponent: BookOpen },
+  { slug: 'chaikini', name: 'ঝুড়িভরা', title: 'ঘরের বাজার হাতের নাগালে', category: 'পণ্য', tone: 'green', href: '/modules/chaikini', enabledKey: 'storefront', iconComponent: ShoppingCart },
+  { slug: 'haatbazar', name: 'শখেরহাট', title: 'নতুন পণ্য, নতুন আনন্দ', category: 'পণ্য', tone: 'orange', href: '/modules/haatbazar', iconComponent: Store },
+  { slug: 'porai', name: 'স্যারকই', title: 'পড়তে চাই, পড়াতে চাই', category: 'শিক্ষা', tone: 'blue', href: '/modules/porai', enabledKey: 'porai', iconComponent: GraduationCap },
+  { slug: 'examarena-bd', name: 'ExamArena BD', title: 'সকল পরীক্ষার পূর্ণ প্রস্তুতি', category: 'শিক্ষা', tone: 'purple', href: '/modules/examarena-bd', iconComponent: BookOpen },
   { slug: 'an-overseas', name: 'A&N Overseas', title: 'বিদেশে উচ্চশিক্ষা ও স্কলারশিপ', category: 'শিক্ষা', tone: 'pink', href: '/modules/an-overseas', iconComponent: Globe2 },
-  { slug: 'chakrichai', name: 'চাকরিচাই', title: 'চাকরি ও নিয়োগ', category: 'চাকরি', tone: 'amber', href: '/modules/chakrichai', iconComponent: BriefcaseBusiness },
-  { slug: 'shebachai', name: 'সেবাচাই', title: 'মেরামত ও স্থানীয় সেবা', category: 'সেবা', tone: 'red', href: '/modules/shebachai', iconComponent: Wrench },
-  { slug: 'varachai', name: 'বাসাচাই', title: 'বাড়ি, রুম ও বাসস্থান', category: 'সেবা', tone: 'green', href: '/modules/varachai', iconComponent: House },
+  { slug: 'chakrichai', name: 'কর্মদুয়ার', title: 'চাকরি খুঁজুন, নিয়োগ দিন', category: 'চাকরি', tone: 'amber', href: '/modules/chakrichai', iconComponent: BriefcaseBusiness },
+  { slug: 'shebachai', name: 'ডাকদিলেই', title: 'এক ডাকেই প্রয়োজনের সমাধান', category: 'সেবা', tone: 'red', href: '/modules/shebachai', iconComponent: Wrench },
+  { slug: 'varachai', name: 'ভাড়াহাট', title: 'বাসা, গাড়ি ও অন্যান্য ভাড়া', category: 'সেবা', tone: 'green', href: '/modules/varachai', iconComponent: House },
   { slug: 'business-tools', name: 'Business Tools', title: 'ব্যবসার ডিজিটাল টুলস', category: 'ব্যবসা', tone: 'blue', href: '/business', iconComponent: ChartNoAxesCombined },
   { slug: 'an-media-hub', name: 'AN Media Hub', title: 'শিক্ষা, টিপস ও কনটেন্ট', category: 'শিক্ষা', tone: 'blue', href: '/feed?category=education', iconComponent: Play },
 ];
