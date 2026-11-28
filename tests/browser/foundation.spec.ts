@@ -71,7 +71,7 @@ test('search displays supported result types with pagination', async ({ page }) 
   await expect(page.locator('li')).toHaveCount(2);
 });
 
-test('premium home interactions and the 40-module directory work', async ({ page }) => {
+test('premium home interactions and the 42-module directory work', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'সহজ হাব BD' })).toBeVisible();
   await expect(page.locator('.brand-pin')).toHaveAttribute('src', /shohojhub-pin\.png/);
@@ -80,14 +80,14 @@ test('premium home interactions and the 40-module directory work', async ({ page
   const cards = page.locator('.module-card:visible');
   await expect(cards).toHaveCount(desktop ? 14 : 10);
   await expect(cards.locator('strong')).toHaveText([
-    'চায়াকিনি', 'হাটবাজার', 'পড়াই', 'ExamArena BD',
-    'A&N Overseas', 'চাকরিচাই', 'সেবাচাই', 'বাসাচাই', 'Business Tools', 'AN Media Hub',
-    ...(desktop ? ['ShohojTools', 'AI Assistant', 'Referral & Rewards', 'KajChai'] : []),
+    'ঝুড়িভরা', 'শখেরহাট', 'স্যারকই', 'ExamArena BD',
+    'A&N Overseas', 'কর্মদুয়ার', 'ডাকদিলেই', 'ভাড়াহাট', 'Business Tools', 'AN Media Hub',
+    ...(desktop ? ['কাজেরবাক্স', 'বুদ্ধিবাবু', 'বন্ধুআনো', 'কাজেরহাট'] : []),
   ]);
   expect(await page.locator('.featured-grid').evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length)).toBe(desktop ? 7 : 5);
   await expect(cards.filter({ hasText: 'Business Tools' })).toHaveAttribute('href', '/business');
   await expect(cards.filter({ hasText: 'AN Media Hub' })).toHaveAttribute('href', '/feed?category=education');
-  await expect(cards.filter({ hasText: 'চায়াকিনি' })).toHaveAttribute('href', '/modules/chaikini');
+  await expect(cards.filter({ hasText: 'ঝুড়িভরা' })).toHaveAttribute('href', '/modules/chaikini');
   expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
   expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(desktop ? 55 : 86);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -120,12 +120,18 @@ test('premium home interactions and the 40-module directory work', async ({ page
 
   await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();
-  await expect(page.locator('.directory-card')).toHaveCount(40);
+  await expect(page.locator('.directory-card')).toHaveCount(42);
   await page.getByRole('button', { name: 'শিক্ষা', exact: true }).click();
-  await expect(page.locator('.directory-card')).toHaveCount(3);
-  await page.getByRole('link', { name: /Porai/ }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Porai' })).toBeVisible();
+  await expect(page.locator('.directory-card')).toHaveCount(4);
+  await page.getByRole('link', { name: /স্যারকই/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'স্যারকই' })).toBeVisible();
   await expect(page.getByRole('status')).toContainText('এখনো চালু করা হয়নি');
+  await page.goto('/modules/haatbazar-used');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('পুরোনোসোনা');
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText('পুরোনো বেচুন, সাশ্রয়ে কিনুন');
+  await page.goto('/modules/skill-courses');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('হাতেখড়ি');
+  await expect(page.getByRole('heading', { level: 2 })).toHaveText('শিখুন, দক্ষ হোন, আয় করুন');
 });
 
 test('live feed and filter sheet match the supplied inner-page structure', async ({ page }) => {
