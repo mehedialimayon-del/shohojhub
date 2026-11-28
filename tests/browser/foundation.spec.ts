@@ -134,12 +134,16 @@ test('premium home interactions and the 40-module directory work', async ({ page
   await page.getByRole('button', { name: 'স্লাইড 2' }).click();
   await expect(page.locator('.hero-banner')).toHaveAttribute('data-banner', '2');
   await page.locator('.hero-banner-hotspot').click();
-  await expect(page.getByRole('status')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
+  await expect(page.locator('.download-notice')).toContainText('Google Play ডাউনলোড লিংক প্রকাশের পর এখানে যুক্ত হবে');
   if (!desktop) {
     await page.getByRole('button', { name: 'ট্রেন্ডিং' }).click();
     await expect(cards).toHaveCount(5);
   }
+});
 
+test('module directory links open working module destinations', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'ব্যানার থামান' }).click();
   await page.getByRole('link', { name: /সব মডিউল দেখুন/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'সব মডিউল' })).toBeVisible();
   await expect(page.locator('.directory-card')).toHaveCount(40);
