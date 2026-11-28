@@ -80,12 +80,23 @@ test('premium home interactions and the 40-module directory work', async ({ page
   const cards = page.locator('.module-card:visible');
   await expect(cards).toHaveCount(desktop ? 14 : 10);
   await expect(cards.locator('strong')).toHaveText([
-    'ChaaiKini', 'HaatBazar', 'Porai', 'ExamArena BD',
-    'A&N Overseas', 'ChakriChai', 'ShebaChai', 'VaraChai', 'Stock Manager', 'Success Stories',
+    'চায়াকিনি', 'হাটবাজার', 'পড়াই', 'ExamArena BD',
+    'A&N Overseas', 'চাকরিচাই', 'সেবাচাই', 'বাসাচাই', 'Business Tools', 'AN Media Hub',
     ...(desktop ? ['ShohojTools', 'AI Assistant', 'Referral & Rewards', 'KajChai'] : []),
   ]);
+  expect(await page.locator('.featured-grid').evaluate((grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length)).toBe(desktop ? 7 : 5);
+  await expect(cards.filter({ hasText: 'Business Tools' })).toHaveAttribute('href', '/business');
+  await expect(cards.filter({ hasText: 'AN Media Hub' })).toHaveAttribute('href', '/feed?category=education');
+  await expect(cards.filter({ hasText: 'চায়াকিনি' })).toHaveAttribute('href', '/modules/chaikini');
   expect((await page.locator('.app-header').boundingBox())?.height).toBeLessThanOrEqual(72);
-  expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(55);
+  expect((await page.locator('.bottom-dock').boundingBox())?.height).toBeLessThanOrEqual(desktop ? 55 : 86);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const headerTop = (await page.locator('.app-header').boundingBox())?.y;
+  const dockTop = (await page.locator('.bottom-dock').boundingBox())?.y;
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  expect((await page.locator('.app-header').boundingBox())?.y).toBe(headerTop);
+  expect((await page.locator('.bottom-dock').boundingBox())?.y).toBe(dockTop);
+  await page.evaluate(() => window.scrollTo(0, 0));
   if (desktop) {
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ নেভিগেশন' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'ডেস্কটপ সাইডবার' })).toBeVisible();
